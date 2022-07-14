@@ -1,0 +1,8 @@
+# IntelliJ
+*.iml
+*.java___jb_tmp___
+.idea/
+
+# Maven
+target/
+bundler/
