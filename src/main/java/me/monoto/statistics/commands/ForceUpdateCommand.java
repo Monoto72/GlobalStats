@@ -33,7 +33,7 @@ public class ForceUpdateCommand extends MainCommand {
 
             DatabaseManager.getAllStatistics();
 
-            System.out.println(" has successfully saved " + count + " players statistics.");
+            plugin.getLogger().info("has successfully saved " + count + " players statistics.");
             sender.sendMessage("Successfully updated the global leaderboard");
         });
     }

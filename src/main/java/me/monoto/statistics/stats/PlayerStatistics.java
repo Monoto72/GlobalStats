@@ -1,7 +1,5 @@
 package me.monoto.statistics.stats;
 
-import org.bukkit.entity.Player;
-
 import java.util.UUID;
 
 public class PlayerStatistics {

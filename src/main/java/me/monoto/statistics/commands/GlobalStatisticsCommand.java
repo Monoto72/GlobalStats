@@ -20,7 +20,7 @@ public class GlobalStatisticsCommand extends MainCommand {
         if (sender instanceof Player) {
                 GlobalMenu.initialise((Player) sender);
         } else {
-            sender.sendMessage("[GlobalStats] by Monoto#0001. Version: " + plugin.getDescription().getVersion());
+            plugin.getLogger().info("[GlobalStats] by Monoto#0001. Version: " + plugin.getDescription().getVersion());
         }
     }
 }

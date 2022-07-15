@@ -35,12 +35,12 @@ public class PlayerSearchCommand extends MainCommand {
         } else {
             PlayerStatistics stats = (PlayerStatistics) StatisticsManager.getPlayerStatistics().get(target.getUniqueId());
 
-            sender.sendMessage(formattedName + " Statistics");
-            sender.sendMessage("Total Fished: " + stats.getFishedFish());
-            sender.sendMessage("Total Mined: " + stats.getMinedBlocks());
-            sender.sendMessage("Total Killed: " + stats.getMobsKilled());
-            sender.sendMessage("Total Traversed: " + stats.getTraversedBlocks());
-            sender.sendMessage("Total Placed " + stats.getPlacedBlocks());
+            plugin.getLogger().info(formattedName + " Statistics");
+            plugin.getLogger().info("Total Fished: " + stats.getFishedFish());
+            plugin.getLogger().info("Total Mined: " + stats.getMinedBlocks());
+            plugin.getLogger().info("Total Killed: " + stats.getMobsKilled());
+            plugin.getLogger().info("Total Traversed: " + stats.getTraversedBlocks());
+            plugin.getLogger().info("Total Placed " + stats.getPlacedBlocks());
         }
     }
 }

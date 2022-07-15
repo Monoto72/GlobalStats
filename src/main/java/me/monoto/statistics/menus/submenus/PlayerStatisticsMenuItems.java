@@ -26,7 +26,6 @@ public class PlayerStatisticsMenuItems {
     public static void getItemPreview (String type, Player player, Player target) {
 
         PaginatedGui gui = Gui.paginated().title(Component.text(Formatters.getPossessionString(target.getName()) + " Statistics | Page: 1")).rows(4).pageSize(27).create();
-        System.out.println(gui.getPagesNum());
         Pagination.getPaginatedUtil(gui, target);
         gui.setItem(31, ItemBuilder.skull().owner(target).name(Formatters.getPlayerSkullTitle(target))
                 .asGuiItem(event -> PlayerMenu.initialise((Player) event.getWhoClicked(), target)));
@@ -129,7 +128,6 @@ public class PlayerStatisticsMenuItems {
                         .build();
 
                 GuiItem item = ItemBuilder.from(material).lore(lore).asGuiItem();
-                System.out.println(material);
                 gui.addItem(item);
             }
         }

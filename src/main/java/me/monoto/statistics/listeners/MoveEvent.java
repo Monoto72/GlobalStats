@@ -3,7 +3,6 @@ package me.monoto.statistics.listeners;
 import me.monoto.statistics.Statistics;
 import me.monoto.statistics.stats.PlayerStatistics;
 import me.monoto.statistics.stats.StatisticsManager;
-import org.bukkit.Statistic;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
