@@ -6,14 +6,14 @@
 
     <groupId>me.monoto</groupId>
     <artifactId>statistics</artifactId>
-    <version>1.0</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
 
     <name>GlobalStats</name>
 
     <description>A plugin to view chosen statistics on the server</description>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>1.17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
