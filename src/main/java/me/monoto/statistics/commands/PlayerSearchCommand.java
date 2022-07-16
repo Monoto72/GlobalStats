@@ -42,6 +42,7 @@ public class PlayerSearchCommand extends MainCommand {
                                         StatisticsManager.getTotalBlocksTraversed(oPlayer)
                                 );
                                 PlayerMenu.initialise((Player) sender, oPlayer);
+                                // Potentially add insert if not exist and update if exist
                             } else {
                                 PlayerMenu.initialise((Player) sender, oPlayer);
                             }

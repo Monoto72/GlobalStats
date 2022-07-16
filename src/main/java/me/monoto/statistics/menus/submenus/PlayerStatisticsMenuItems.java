@@ -12,6 +12,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -23,10 +24,9 @@ import java.util.Objects;
 
 public class PlayerStatisticsMenuItems {
 
-    public static void getItemPreview (String type, Player player, Player target) {
-        if (target == null) return;
+    public static void getItemPreview (String type, Player player, OfflinePlayer target) {
 
-        PaginatedGui gui = Gui.paginated().title(Component.text(Formatters.getPossessionString(target.getName()) + " Statistics | Page: 1")).rows(4).pageSize(27).create();
+        PaginatedGui gui = Gui.paginated().title(Component.text(Formatters.getPossessionString(Objects.requireNonNull(target.getName())) + " Statistics | Page: 1")).rows(4).pageSize(27).create();
         Pagination.getPaginatedUtil(gui, target);
         gui.setItem(31, ItemBuilder.skull().owner(target).name(Formatters.getPlayerSkullTitle(target))
                 .asGuiItem(event -> PlayerMenu.initialise((Player) event.getWhoClicked(), target)));
@@ -47,7 +47,7 @@ public class PlayerStatisticsMenuItems {
 
     }
 
-    private static void getKills(PaginatedGui gui, Player target) {
+    private static void getKills(PaginatedGui gui, OfflinePlayer target) {
         for (EntityType type : EntityType.values()) {
             try {
                 if (target.getStatistic(Statistic.KILL_ENTITY, type) > 0) {
@@ -79,7 +79,7 @@ public class PlayerStatisticsMenuItems {
         }
     }
 
-    private static void getMovements(PaginatedGui gui, Player target) {
+    private static void getMovements(PaginatedGui gui, OfflinePlayer target) {
         ArrayList<String> itemNames = new ArrayList<>(Arrays.asList("Distance Walked", "Distance Sprinted", "Distance Swum", "Distance Walked on Water", "Distance Walked under Water", "Distance Climbed", "Distance Crouched", "Distance Fallen", "Distance by Elytra", "Distance by Boat", "Distance by Horse", "Distance by Minecart", "Distance by Pig", "Distance by Strider", "Times Jumps"));
         ArrayList<Statistic> statistics = new ArrayList<>(Arrays.asList(Statistic.WALK_ONE_CM, Statistic.SPRINT_ONE_CM, Statistic.SWIM_ONE_CM, Statistic.WALK_ON_WATER_ONE_CM, Statistic.WALK_UNDER_WATER_ONE_CM, Statistic.CLIMB_ONE_CM, Statistic.CROUCH_ONE_CM, Statistic.FALL_ONE_CM, Statistic.AVIATE_ONE_CM, Statistic.BOAT_ONE_CM, Statistic.HORSE_ONE_CM, Statistic.MINECART_ONE_CM, Statistic.PIG_ONE_CM, Statistic.STRIDER_ONE_CM, Statistic.JUMP));
         ArrayList<Material> materials = new ArrayList<>(Arrays.asList(Material.LEATHER_BOOTS, Material.GOLDEN_BOOTS, Material.WATER_BUCKET, Material.ICE, Material.DIAMOND_HELMET, Material.LADDER, Material.LEATHER_BOOTS, Material.LINGERING_POTION, Material.ELYTRA, Material.OAK_BOAT, Material.DIAMOND_HORSE_ARMOR, Material.MINECART, Material.PIG_SPAWN_EGG, Material.STRIDER_SPAWN_EGG, Material.IRON_BOOTS));
@@ -101,7 +101,7 @@ public class PlayerStatisticsMenuItems {
         }
     }
 
-    private static void getBlocks(PaginatedGui gui, String type, Player target) {
+    private static void getBlocks(PaginatedGui gui, String type, OfflinePlayer target) {
         Statistic statistic = Objects.equals(type, "mined") ? Statistic.MINE_BLOCK : Statistic.USE_ITEM;
         
         for (Material material : Material.values()) {
