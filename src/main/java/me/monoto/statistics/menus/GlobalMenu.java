@@ -39,25 +39,14 @@ public class GlobalMenu {
 
     private static List<Component> getLore(String type) {
         List<Component> lore = new ArrayList<>();
-        String globalStatistic = "0";
-
-        switch (type) {
-            case "fished":
-                globalStatistic = String.valueOf(StatisticsManager.getGlobalStatistics().getFishedFish());
-                break;
-            case "mined":
-                globalStatistic = String.valueOf(StatisticsManager.getGlobalStatistics().getMinedBlocks());
-                break;
-            case "killed":
-                globalStatistic = String.valueOf(StatisticsManager.getGlobalStatistics().getMobsKilled());
-                break;
-            case "traversed":
-                globalStatistic = Formatters.getIntFormatter(StatisticsManager.getGlobalStatistics().getTraversedBlocks());
-                break;
-            case "placed":
-                globalStatistic = String.valueOf(StatisticsManager.getGlobalStatistics().getPlacedBlocks());
-                break;
-        }
+        String globalStatistic = switch (type) {
+            case "fished" -> String.valueOf(StatisticsManager.getGlobalStatistics().getFishedFish());
+            case "mined" -> String.valueOf(StatisticsManager.getGlobalStatistics().getMinedBlocks());
+            case "killed" -> String.valueOf(StatisticsManager.getGlobalStatistics().getMobsKilled());
+            case "traversed" -> Formatters.getIntFormatter(StatisticsManager.getGlobalStatistics().getTraversedBlocks());
+            case "placed" -> String.valueOf(StatisticsManager.getGlobalStatistics().getPlacedBlocks());
+            default -> "0";
+        };
 
         TextComponent amount = Component.text().content("Total " + type + ": ").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
                 .append(Component.text().content(globalStatistic).color(NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false))

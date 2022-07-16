@@ -4,9 +4,8 @@ import me.monoto.statistics.Statistics;
 import me.monoto.statistics.database.DatabaseManager;
 import me.monoto.statistics.stats.PlayerStatistics;
 import me.monoto.statistics.stats.StatisticsManager;
-import org.bukkit.Material;
+import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.Statistic;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -27,9 +26,9 @@ public class JoinEvent implements Listener {
                     event.getPlayer().getUniqueId(),
                     event.getPlayer().getName(),
                     event.getPlayer().getStatistic(Statistic.FISH_CAUGHT),
-                    getTotalBlocks(event.getPlayer(), Statistic.MINE_BLOCK),
+                    StatisticsManager.getTotalBlocks(event.getPlayer(), Statistic.MINE_BLOCK),
                     event.getPlayer().getStatistic(Statistic.MOB_KILLS),
-                    getTotalBlocks(event.getPlayer(), Statistic.USE_ITEM),
+                    StatisticsManager.getTotalBlocks(event.getPlayer(), Statistic.USE_ITEM),
                     StatisticsManager.getTotalBlocksTraversed(event.getPlayer())
             );
 
@@ -43,17 +42,5 @@ public class JoinEvent implements Listener {
                 }
             }
         }
-    }
-
-    private int getTotalBlocks(Player player, Statistic statistic) {
-        int count = 0;
-        for (Material Material : Material.values()) {
-            try {
-                count += player.getStatistic(statistic, Material);
-            } catch (IllegalArgumentException ignored) {
-                // Catch blocks not on the Statistic list if any
-            }
-        }
-        return count;
     }
 }

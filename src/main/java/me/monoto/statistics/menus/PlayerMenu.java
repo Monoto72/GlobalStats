@@ -11,14 +11,16 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class PlayerMenu {
-    public static void initialise(Player player, Player target) {
-        Gui gui = Gui.gui().rows(3).title(Component.text(Formatters.getPossessionString(target.getName()) + " Statistics")).create();
+    public static void initialise(Player player, OfflinePlayer target) {
+        Gui gui = Gui.gui().rows(3).title(Component.text(Formatters.getPossessionString(Objects.requireNonNull(target.getName())) + " Statistics")).create();
 
         populateMenu(gui, player, target);
 
@@ -26,15 +28,16 @@ public class PlayerMenu {
         gui.open(player);
     }
 
-    private static void populateMenu(Gui gui, Player player, Player target) {
+    private static void populateMenu(Gui gui, Player player, OfflinePlayer target) {
+        Player onlinePlayer = target.getPlayer() != null ? target.getPlayer() : null;
 
         gui.setItem(10, ItemBuilder.skull().owner(target).name(Formatters.getPlayerSkullTitle(target)).asGuiItem());
 
         gui.setItem(12, ItemBuilder.from(Material.FISHING_ROD).name(Component.text("Fished Fish").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)).lore(getLore("fished", target)).asGuiItem());
-        gui.setItem(13, ItemBuilder.from(Material.DIAMOND_PICKAXE).name(Component.text("Mined Blocks").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)).lore(getLore("mined", target)).asGuiItem(event -> PlayerStatisticsMenuItems.getItemPreview("mined", (Player) event.getWhoClicked(), target)));
-        gui.setItem(14, ItemBuilder.from(Material.DIAMOND_SWORD).name(Component.text("Mobs Killed").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)).lore(getLore("killed", target)).asGuiItem(event -> PlayerStatisticsMenuItems.getItemPreview("killed", (Player) event.getWhoClicked(), target)));
-        gui.setItem(15, ItemBuilder.from(Material.LEATHER_BOOTS).name(Component.text("Movement").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)).lore(getLore("traversed", target)).asGuiItem(event -> PlayerStatisticsMenuItems.getItemPreview("moved", (Player) event.getWhoClicked(), target)));
-        gui.setItem(16, ItemBuilder.from(Material.STONE).name(Component.text("Placed Blocks").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)).lore(getLore("placed", target)).asGuiItem(event -> PlayerStatisticsMenuItems.getItemPreview("placed", (Player) event.getWhoClicked(), target)));
+        gui.setItem(13, ItemBuilder.from(Material.DIAMOND_PICKAXE).name(Component.text("Mined Blocks").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)).lore(getLore("mined", target)).asGuiItem(event -> PlayerStatisticsMenuItems.getItemPreview("mined", (Player) event.getWhoClicked(), onlinePlayer)));
+        gui.setItem(14, ItemBuilder.from(Material.DIAMOND_SWORD).name(Component.text("Mobs Killed").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)).lore(getLore("killed", target)).asGuiItem(event -> PlayerStatisticsMenuItems.getItemPreview("killed", (Player) event.getWhoClicked(), onlinePlayer)));
+        gui.setItem(15, ItemBuilder.from(Material.LEATHER_BOOTS).name(Component.text("Movement").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)).lore(getLore("traversed", target)).asGuiItem(event -> PlayerStatisticsMenuItems.getItemPreview("moved", (Player) event.getWhoClicked(), onlinePlayer)));
+        gui.setItem(16, ItemBuilder.from(Material.STONE).name(Component.text("Placed Blocks").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)).lore(getLore("placed", target)).asGuiItem(event -> PlayerStatisticsMenuItems.getItemPreview("placed", (Player) event.getWhoClicked(), onlinePlayer)));
 
         gui.setItem(26, ItemBuilder.skull().texture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQ2OWUwNmU1ZGFkZmQ4NGU1ZjNkMWMyMTA2M2YyNTUzYjJmYTk0NWVlMWQ0ZDcxNTJmZGM1NDI1YmMxMmE5In19fQ==")
                 .name(Component.text("Go Back")).asGuiItem(event -> PlayerListMenu.initialise(player)));
@@ -42,28 +45,19 @@ public class PlayerMenu {
         gui.getFiller().fill(ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE).name(Component.text(" ")).asGuiItem());
     }
 
-    private static List<Component> getLore(String type, Player target) {
+    private static List<Component> getLore(String type, OfflinePlayer target) {
         List<Component> lore = new ArrayList<>();
         String playerStatistic = "0";
 
-        PlayerStatistics stats = (PlayerStatistics) StatisticsManager.getPlayerStatistics().get(target.getUniqueId());
+        PlayerStatistics stats = target.getPlayer() != null ? (PlayerStatistics) StatisticsManager.getPlayerStatistics().get(target.getUniqueId())
+                : (PlayerStatistics) StatisticsManager.getOfflinePlayerStatistics().get(target.getUniqueId());
 
         switch (type) {
-            case "fished":
-                playerStatistic = String.valueOf(stats.getFishedFish());
-                break;
-            case "mined":
-                playerStatistic = String.valueOf(stats.getMinedBlocks());
-                break;
-            case "killed":
-                playerStatistic = String.valueOf(stats.getMobsKilled());
-                break;
-            case "traversed":
-                playerStatistic = Formatters.getIntFormatter(stats.getTraversedBlocks());
-                break;
-            case "placed":
-                playerStatistic = String.valueOf(stats.getPlacedBlocks());
-                break;
+            case "fished" -> playerStatistic = String.valueOf(stats.getFishedFish());
+            case "mined" -> playerStatistic = String.valueOf(stats.getMinedBlocks());
+            case "killed" -> playerStatistic = String.valueOf(stats.getMobsKilled());
+            case "traversed" -> playerStatistic = Formatters.getIntFormatter(stats.getTraversedBlocks());
+            case "placed" -> playerStatistic = String.valueOf(stats.getPlacedBlocks());
         }
 
         TextComponent amount = Component.text().content("Total " + type + ": ").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)

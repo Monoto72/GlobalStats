@@ -4,17 +4,18 @@ import dev.triumphteam.cmd.core.annotation.SubCommand;
 import dev.triumphteam.cmd.core.annotation.Suggestion;
 import me.monoto.statistics.Statistics;
 import me.monoto.statistics.menus.PlayerMenu;
-import me.monoto.statistics.stats.PlayerStatistics;
 import me.monoto.statistics.stats.StatisticsManager;
-import me.monoto.statistics.utils.Formatters;
+import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerSearchCommand extends MainCommand {
 
-    static Statistics plugin;
+    Statistics plugin;
 
     public PlayerSearchCommand(@NotNull final Statistics main) {
         plugin = main;
@@ -25,22 +26,39 @@ public class PlayerSearchCommand extends MainCommand {
         Player target = Bukkit.getPlayer(name);
 
         if (target == null) {
-            sender.sendMessage(name + " is not online");
-            return;
-        }
-        String formattedName = Formatters.getPossessionString(target.getName());
+            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                OfflinePlayer oPlayer = Bukkit.getOfflinePlayer(name);
 
-        if (sender instanceof Player) {
-            PlayerMenu.initialise((Player) sender, target);
+                Bukkit.getScheduler().runTask(this.plugin, () -> {
+                    if (oPlayer.hasPlayedBefore()) {
+                        if (sender instanceof Player) {
+                            if (StatisticsManager.getOfflinePlayerStatistics().get(oPlayer.getUniqueId()) == null) {
+                                StatisticsManager.setOfflinePlayerStatistics(oPlayer.getUniqueId(),
+                                        oPlayer.getName(),
+                                        oPlayer.getStatistic(Statistic.FISH_CAUGHT),
+                                        StatisticsManager.getTotalBlocks(oPlayer, Statistic.MINE_BLOCK),
+                                        oPlayer.getStatistic(Statistic.MOB_KILLS),
+                                        StatisticsManager.getTotalBlocks(oPlayer, Statistic.USE_ITEM),
+                                        StatisticsManager.getTotalBlocksTraversed(oPlayer)
+                                );
+                                PlayerMenu.initialise((Player) sender, oPlayer);
+                            } else {
+                                PlayerMenu.initialise((Player) sender, oPlayer);
+                            }
+                        } else {
+                            this.plugin.getLogger().info("Too many statistics for you to view in console.");
+                        }
+                    } else {
+                        sender.sendMessage(oPlayer.getName() + " has never played the server before.");
+                    }
+                });
+            });
         } else {
-            PlayerStatistics stats = (PlayerStatistics) StatisticsManager.getPlayerStatistics().get(target.getUniqueId());
-
-            plugin.getLogger().info(formattedName + " Statistics");
-            plugin.getLogger().info("Total Fished: " + stats.getFishedFish());
-            plugin.getLogger().info("Total Mined: " + stats.getMinedBlocks());
-            plugin.getLogger().info("Total Killed: " + stats.getMobsKilled());
-            plugin.getLogger().info("Total Traversed: " + stats.getTraversedBlocks());
-            plugin.getLogger().info("Total Placed " + stats.getPlacedBlocks());
+            if (sender instanceof Player) {
+                PlayerMenu.initialise((Player) sender, target);
+            } else {
+                this.plugin.getLogger().info("Too many statistics for you to view in console.");
+            }
         }
     }
 }

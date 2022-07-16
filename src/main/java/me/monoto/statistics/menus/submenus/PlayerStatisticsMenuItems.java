@@ -24,6 +24,7 @@ import java.util.Objects;
 public class PlayerStatisticsMenuItems {
 
     public static void getItemPreview (String type, Player player, Player target) {
+        if (target == null) return;
 
         PaginatedGui gui = Gui.paginated().title(Component.text(Formatters.getPossessionString(target.getName()) + " Statistics | Page: 1")).rows(4).pageSize(27).create();
         Pagination.getPaginatedUtil(gui, target);
@@ -31,19 +32,10 @@ public class PlayerStatisticsMenuItems {
                 .asGuiItem(event -> PlayerMenu.initialise((Player) event.getWhoClicked(), target)));
 
         switch (type) {
-            case "fished":
-                getFish(gui);
-                break;
-            case "killed":
-                getKills(gui, target);
-                break;
-            case "moved":
-                getMovements(gui, target);
-                break;
-            case "mined":
-            case "placed":
-                getBlocks(gui, type, target);
-                break;
+            case "fished" -> getFish(gui);
+            case "killed" -> getKills(gui, target);
+            case "moved" -> getMovements(gui, target);
+            case "mined", "placed" -> getBlocks(gui, type, target);
         }
 
         gui.setDefaultClickAction(event -> event.setCancelled(true));
@@ -70,19 +62,12 @@ public class PlayerStatisticsMenuItems {
                     try {
                         material = Material.valueOf(type + "_SPAWN_EGG");
                     } catch (IllegalArgumentException exception) {
-                        switch (type) {
-                            case IRON_GOLEM:
-                                material = Material.IRON_INGOT;
-                                break;
-                            case SNOWMAN:
-                                material = Material.SNOWBALL;
-                                break;
-                            case WITHER:
-                                material = Material.WITHER_SKELETON_SKULL;
-                                break;
-                            default:
-                                material = null;
-                        }
+                        material = switch (type) {
+                            case IRON_GOLEM -> Material.IRON_INGOT;
+                            case SNOWMAN -> Material.SNOWBALL;
+                            case WITHER -> Material.WITHER_SKELETON_SKULL;
+                            default -> null;
+                        };
                     }
 
                     if (material != null) {

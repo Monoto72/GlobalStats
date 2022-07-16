@@ -4,10 +4,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Formatters {
@@ -15,8 +17,8 @@ public class Formatters {
         return string.endsWith("s") ? string : string + "'s";
     }
 
-    public static TextComponent getPlayerSkullTitle(Player player) {
-        return Component.text().content(getPossessionString(player.getName()) + " statistics").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false).build();
+    public static TextComponent getPlayerSkullTitle(OfflinePlayer player) {
+        return Component.text().content(getPossessionString(Objects.requireNonNull(player.getName())) + " statistics").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false).build();
     }
 
     public static String getIntFormatter(double value) {
