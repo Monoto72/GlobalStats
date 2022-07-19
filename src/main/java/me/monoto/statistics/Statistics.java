@@ -6,24 +6,45 @@ import me.monoto.statistics.listeners.*;
 import me.monoto.statistics.stats.PlayerStatistics;
 import me.monoto.statistics.stats.StatisticsManager;
 import me.monoto.statistics.utils.CommandManager;
+import me.monoto.statistics.utils.LanguageManager;
+import me.monoto.statistics.utils.UpdateChecker;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class Statistics extends JavaPlugin {
+import java.io.File;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
-    // public ConfigManager config;
+public final class Statistics extends JavaPlugin {
+    private static Statistics instance;
+
+    private String newVersion;
+    private YamlConfiguration langFile;
+
     public DatabaseClass database;
     public Metrics metric;
 
+    public static Statistics getInstance() {
+        return instance;
+    }
+
+    public Statistics() {
+        instance = this;
+    }
+
     @Override
     public void onEnable() {
+        saveDefaultConfig();
         int bstatID = 15621;
+        int spigotID = 103379;
 
-        // this.config = new ConfigManager(this);
-        getDataFolder().mkdirs();
+        this.getFile().mkdirs();
         this.database = new DatabaseClass(this);
         this.metric = new Metrics(this, bstatID);
+
+        setLanguage(new LanguageManager(getConfig().getString("language"), this).getFileConfig());
 
         new JoinEvent(this);
         new LeaveEvent(this);
@@ -34,6 +55,16 @@ public final class Statistics extends JavaPlugin {
         new MoveEvent(this);
 
         CommandManager.setupCommandManager(this);
+
+        // Update checker
+        (new UpdateChecker(this, spigotID)).getLatestVersion(version -> {
+            if (!Objects.equals(getDescription().getVersion(), version)) {
+                getLogger().info("GlobalStats v" + version + " is out! Download it at: https://www.spigotmc.org/resources/globalstats.103379/");
+                setVersion(version);
+            } else {
+                getLogger().info("No new version available");
+            }
+        });
 
         if (!Bukkit.getOnlinePlayers().isEmpty()) {
             Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
@@ -52,5 +83,21 @@ public final class Statistics extends JavaPlugin {
             DatabaseManager.updatePlayer(stats.getPlayerUUID());
         });
         getLogger().info(" has successfully shut down, and has saved " + StatisticsManager.getPlayerStatistics().size() + " players data.");
+    }
+
+    public String getVersion() {
+        return this.newVersion;
+    }
+
+    public void setVersion(String value) {
+        this.newVersion = value;
+    }
+
+    public YamlConfiguration getLanguage() {
+        return langFile;
+    }
+
+    public void setLanguage(YamlConfiguration value) {
+        this.langFile = value;
     }
 }

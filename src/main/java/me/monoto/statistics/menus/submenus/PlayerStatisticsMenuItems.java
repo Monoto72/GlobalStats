@@ -105,7 +105,7 @@ public class PlayerStatisticsMenuItems {
         Statistic statistic = Objects.equals(type, "mined") ? Statistic.MINE_BLOCK : Statistic.USE_ITEM;
         
         for (Material material : Material.values()) {
-            if (target.getStatistic(statistic, material) > 0) {
+            if (target.getStatistic(statistic, material) > 0 && material.isBlock()) {
                 int statAmount = target.getStatistic(statistic, material);
 
                 TextComponent lore = Component.text().content("Total " + type + ": ").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)

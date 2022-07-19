@@ -74,11 +74,13 @@ public class StatisticsManager {
 
     public static int getTotalBlocks(OfflinePlayer player, Statistic statistic) {
         int count = 0;
-        for (org.bukkit.Material Material : Material.values()) {
-            try {
-                count += player.getStatistic(statistic, Material);
-            } catch (IllegalArgumentException ignored) {
-                // Catch blocks not on the Statistic list if any
+        for (org.bukkit.Material material : Material.values()) {
+            if (material.isBlock()) {
+                try {
+                    count += player.getStatistic(statistic, material);
+                } catch (IllegalArgumentException ignored) {
+                    // Catch blocks not on the Statistic list if any
+                }
             }
         }
         return count;
