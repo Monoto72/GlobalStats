@@ -1,0 +1,4 @@
+error:
+  unknown_command: "<red>Unknown command: <gray><cmd>"
+  no_permission: "<hover:show_text:'<gray><permission>'><red>You do not have the permission to do this!"
+  invalid_usage: "<red>Invalid Usage!"
