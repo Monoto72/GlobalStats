@@ -4,7 +4,7 @@ import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.PaginatedGui;
-import me.monoto.statistics.menus.PlayerMenu;
+import me.monoto.statistics.menus.GlobalMenu;
 import me.monoto.statistics.menus.utils.Pagination;
 import me.monoto.statistics.utils.Formatters;
 import net.kyori.adventure.text.Component;
@@ -26,16 +26,17 @@ public class PlayerStatisticsMenuItems {
 
     public static void getItemPreview (String type, Player player, OfflinePlayer target) {
 
-        PaginatedGui gui = Gui.paginated().title(Component.text(Formatters.getPossessionString(Objects.requireNonNull(target.getName())) + " Statistics | Page: 1")).rows(4).pageSize(27).create();
+        PaginatedGui gui = Gui.paginated().title(Component.text(Formatters.getPossessionString(Objects.requireNonNull(target.getName())) + " stats | Page: 1")).rows(4).pageSize(27).create();
         Pagination.getPaginatedUtil(gui, target);
-        gui.setItem(31, ItemBuilder.skull().owner(target).name(Formatters.getPlayerSkullTitle(target))
-                .asGuiItem(event -> PlayerMenu.initialise((Player) event.getWhoClicked(), target)));
+
+        gui.setItem(31, ItemBuilder.skull().owner(target).name(Formatters.mini(Formatters.lang().getString("gui.main.player_head.title", "<player>"), "player", Component.text(Formatters.getPossessionString(Objects.requireNonNull(target.getName())))).decoration(TextDecoration.ITALIC, false))
+                .asGuiItem(event -> GlobalMenu.initialise((Player) event.getWhoClicked(), target)));
 
         switch (type) {
-            case "fished" -> getFish(gui);
-            case "killed" -> getKills(gui, target);
-            case "moved" -> getMovements(gui, target);
-            case "mined", "placed" -> getBlocks(gui, type, target);
+            case "fishing" -> getFish(gui);
+            case "killing" -> getKills(gui, target);
+            case "travelling" -> getMovements(gui, target);
+            case "mining", "placing" -> getBlocks(gui, type, target);
         }
 
         gui.setDefaultClickAction(event -> event.setCancelled(true));

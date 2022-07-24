@@ -15,7 +15,7 @@ public class LanguageManager {
 
     private YamlConfiguration langFile;
 
-    private final ArrayList<String> languages = new ArrayList<>(List.of("en_GB", "en_FR", "en_US"));
+    private final ArrayList<String> languages = new ArrayList<>(List.of("en_GB", "en_FR"));
 
     public LanguageManager(String language, Statistics plugin) {
         this.language = language;

@@ -1,4 +1,45 @@
+# Language file for en_GB
+#
+
+# For formatters, you will want to read https://docs.adventure.kyori.net/minimessage/format.html
+#
+# Please be aware that some values do not exist on the above site, this is due to them being placeholders from the plugin
+# i.e. <cmd>, <player>, <amount>, and any other unknown ones.
+
 error:
   unknown_command: "<red>Unknown command: <gray><cmd>"
   no_permission: "<hover:show_text:'<gray><permission>'><red>You do not have the permission to do this!"
   invalid_usage: "<red>Invalid Usage!"
+  never_played: "<red><player> has never played the server before."
+gui:
+  util:
+    back: "Go back"
+    page:
+      forward: "Next page"
+      backward: "Last page"
+    all_players:
+      title: "All players"
+      lore: "Click me to view all Players"
+
+
+  main: # First page Statistics Menu [Global, Player] statistics
+    title: "<black>Global Statistics"
+    category:
+      fishing:
+        title: "Fishing"
+        lore: "Total: <amount>"
+      mining:
+        title: "Mining"
+        lore: "Total: <amount>"
+      killing:
+        title: "Killing"
+        lore: "Total: <amount>"
+      travelling:
+        title: "Traversed Blocks"
+        lore: "Total: <amount>"
+      placing:
+        title: "Placing"
+        lore: "Total: <amount>"
+    player_head:
+      title: "<player> Statistics"
+

@@ -39,7 +39,7 @@ public class PlayerListMenu {
                     if(Bukkit.getPlayer(stats.getPlayerUUID()) == null)  {
                         initialise((Player) event.getWhoClicked());
                     } else {
-                        PlayerMenu.initialise((Player) event.getWhoClicked(), player);
+                        GlobalMenu.initialise((Player) event.getWhoClicked(), player);
                     }
                 });
 

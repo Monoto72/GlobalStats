@@ -38,19 +38,13 @@ public final class Statistics extends JavaPlugin {
         int bstatID = 15621;
         int spigotID = 103379;
 
-        this.getFile().mkdirs();
         this.database = new DatabaseClass(this);
         this.metric = new Metrics(this, bstatID);
 
         setLanguage(new LanguageManager(getConfig().getString("language"), this).getFileConfig());
 
-        new JoinEvent(this);
-        new LeaveEvent(this);
-        new FishingEvent(this);
-        new MiningEvent(this);
-        new EntityKilledEvent(this);
-        new PlacingEvent(this);
-        new MoveEvent(this);
+        new RouteEvent(this);
+        new StatsEvent(this);
 
         CommandManager.setupCommandManager(this);
 
@@ -66,9 +60,7 @@ public final class Statistics extends JavaPlugin {
 
         if (!Bukkit.getOnlinePlayers().isEmpty()) {
             Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-                getServer().getOnlinePlayers().forEach(player -> {
-                    DatabaseManager.updatePlayer(player.getUniqueId());
-                });
+                getServer().getOnlinePlayers().forEach(player -> DatabaseManager.updatePlayer(player.getUniqueId()));
                 DatabaseManager.getAllStatistics();
             }, 1L, 20L * 300);
         }

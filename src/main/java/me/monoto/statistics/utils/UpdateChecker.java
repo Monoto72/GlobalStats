@@ -20,14 +20,11 @@ public class UpdateChecker {
     }
 
     public void getLatestVersion(Consumer<String> consumer) {
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                InputStream stream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.resourceID).openStream();
-                Scanner scanner = new Scanner(stream);
-
-                if (scanner.hasNext()) {
-                    consumer.accept(scanner.nextLine());
-                }
+                String url = "https://api.spigotmc.org/legacy/update.php?resource=" + resourceID;
+                Scanner scanner = new Scanner(new URL(url).openStream());
+                consumer.accept(scanner.next());
                 scanner.close();
             } catch (IOException e) {
                 this.plugin.getLogger().warning("Update checker is broken, can't find an update! Exception: ");
