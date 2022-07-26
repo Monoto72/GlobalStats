@@ -17,17 +17,22 @@ import org.bukkit.Statistic;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class PlayerStatisticsMenuItems {
 
     public static void getItemPreview (String type, Player player, OfflinePlayer target) {
 
-        PaginatedGui gui = Gui.paginated().title(Component.text(Formatters.getPossessionString(Objects.requireNonNull(target.getName())) + " stats | Page: 1")).rows(4).pageSize(27).create();
-        Pagination.getPaginatedUtil(gui, target);
+        PaginatedGui gui = Gui.paginated().title(Formatters.miniMulti(Formatters.lang().getString("gui.main.title-player", "<black><player> <type> stats"), List.of("player", "type"), List.of(
+                Component.text(Formatters.getPossessionString(Objects.requireNonNull(target.getName()))),
+                Component.text(type)
+        ))).rows(4).pageSize(27).create();
+        Pagination.getPaginatedUtil(gui, target, "player", type);
 
         gui.setItem(31, ItemBuilder.skull().owner(target).name(Formatters.mini(Formatters.lang().getString("gui.main.player_head.title", "<player>"), "player", Component.text(Formatters.getPossessionString(Objects.requireNonNull(target.getName())))).decoration(TextDecoration.ITALIC, false))
                 .asGuiItem(event -> GlobalMenu.initialise((Player) event.getWhoClicked(), target)));
@@ -54,10 +59,6 @@ public class PlayerStatisticsMenuItems {
                 if (target.getStatistic(Statistic.KILL_ENTITY, type) > 0) {
                     int statAmount = target.getStatistic(Statistic.KILL_ENTITY, type);
 
-                    TextComponent lore = Component.text().content("Total Killed" + ": ").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
-                            .append(Component.text().content(String.valueOf(statAmount)).color(NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false))
-                            .build();
-
                     Material material;
 
                     try {
@@ -72,7 +73,8 @@ public class PlayerStatisticsMenuItems {
                     }
 
                     if (material != null) {
-                        GuiItem item = ItemBuilder.from(material).name(Component.text(Formatters.capitaliseEachWord(type.name())).decoration(TextDecoration.ITALIC, false)).lore(lore).asGuiItem();
+                        GuiItem item = ItemBuilder.from(material).name(Component.text(Formatters.capitaliseEachWord(type.name())).decoration(TextDecoration.ITALIC, false))
+                                .lore(Formatters.mini(Formatters.lang().getString("gui.main.killing.lore", "<white>Total: <amount>"), "amount", Component.text(statAmount)).decoration(TextDecoration.ITALIC, false)).asGuiItem();
                         gui.addItem(item);
                     }
                 }
@@ -86,16 +88,12 @@ public class PlayerStatisticsMenuItems {
         ArrayList<Material> materials = new ArrayList<>(Arrays.asList(Material.LEATHER_BOOTS, Material.GOLDEN_BOOTS, Material.WATER_BUCKET, Material.ICE, Material.DIAMOND_HELMET, Material.LADDER, Material.LEATHER_BOOTS, Material.LINGERING_POTION, Material.ELYTRA, Material.OAK_BOAT, Material.DIAMOND_HORSE_ARMOR, Material.MINECART, Material.PIG_SPAWN_EGG, Material.STRIDER_SPAWN_EGG, Material.IRON_BOOTS));
 
         for (int index = 0; index < itemNames.size(); index++) {
-            int amount = target.getStatistic(Statistic.JUMP);
+            int statAmount = target.getStatistic(Statistic.JUMP);
             if (statistics.get(index) != Statistic.JUMP) {
-                amount = (int) Math.floor(target.getStatistic(statistics.get(index))) / 100;
+                statAmount = (int) Math.floor(target.getStatistic(statistics.get(index))) / 100;
             }
 
-            TextComponent lore = Component.text().content("Total: ").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
-                    .append(Component.text().content(String.valueOf(amount)).color(NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false))
-                    .build();
-
-            GuiItem item = ItemBuilder.from(materials.get(index)).lore(lore).flags(ItemFlag.HIDE_POTION_EFFECTS)
+            GuiItem item = ItemBuilder.from(materials.get(index)).lore(Formatters.mini(Formatters.lang().getString("gui.main.killing.lore", "<white>Total: <amount>"), "amount", Component.text(statAmount)).decoration(TextDecoration.ITALIC, false)).flags(ItemFlag.HIDE_POTION_EFFECTS)
                     .name(Component.text(itemNames.get(index)).color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false))
                     .asGuiItem();
             gui.addItem(item);
@@ -103,17 +101,14 @@ public class PlayerStatisticsMenuItems {
     }
 
     private static void getBlocks(PaginatedGui gui, String type, OfflinePlayer target) {
-        Statistic statistic = Objects.equals(type, "mined") ? Statistic.MINE_BLOCK : Statistic.USE_ITEM;
+        Statistic statistic = Objects.equals(type, "mining") ? Statistic.MINE_BLOCK : Statistic.USE_ITEM;
+        String typeLore = Objects.equals(type, "mining") ? "gui.main.mining.lore" : "gui.main.placing.lore";
         
         for (Material material : Material.values()) {
             if (target.getStatistic(statistic, material) > 0 && material.isBlock()) {
                 int statAmount = target.getStatistic(statistic, material);
 
-                TextComponent lore = Component.text().content("Total " + type + ": ").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
-                        .append(Component.text().content(String.valueOf(statAmount)).color(NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false))
-                        .build();
-
-                GuiItem item = ItemBuilder.from(material).lore(lore).asGuiItem();
+                GuiItem item = ItemBuilder.from(material).lore(Formatters.mini(Formatters.lang().getString(typeLore, "<white>Total: <amount>"), "amount", Component.text(statAmount)).decoration(TextDecoration.ITALIC, false)).asGuiItem();
                 gui.addItem(item);
             }
         }

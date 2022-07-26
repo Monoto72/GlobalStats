@@ -22,7 +22,7 @@ import java.util.Objects;
 
 public class GlobalMenu {
     public static void initialise(Player player) {
-        Gui gui = Gui.gui().rows(3).title(Formatters.mini(Statistics.getInstance().getLanguage().getString("gui.main.title", "Global Statistics"))).create();
+        Gui gui = Gui.gui().rows(3).title(Formatters.mini(Formatters.lang().getString("gui.main.title-global", "<black>Global Statistics"))).create();
 
         populateGlobal(gui);
 
@@ -31,7 +31,7 @@ public class GlobalMenu {
     }
 
     public static void initialise(Player player, OfflinePlayer oPlayer) {
-        Gui gui = Gui.gui().rows(3).title(Formatters.mini(Statistics.getInstance().getLanguage().getString("gui.main.title", "Global Statistics"))).create();
+        Gui gui = Gui.gui().rows(3).title(Formatters.mini(Formatters.lang().getString("gui.main.title-global", "<black>Global Statistics"))).create();
 
         populatePlayer(gui, oPlayer);
 
@@ -40,12 +40,12 @@ public class GlobalMenu {
     }
 
     private static void populateGlobal(Gui gui) {
-        gui.setItem(10, ItemBuilder.from(Material.CHEST).name(Formatters.mini(Formatters.lang().getString("gui.main.all.title", "All Players")).decoration(TextDecoration.ITALIC, false)).lore(Formatters.mini(Formatters.lang().getString("gui.global.all.lore", "Click me to view all players")).decoration(TextDecoration.ITALIC, false)).asGuiItem(event -> PlayerListMenu.initialise((Player) event.getWhoClicked())));
+        gui.setItem(10, ItemBuilder.from(Material.CHEST).name(Formatters.mini(Formatters.lang().getString("gui.main.all.title", "All Players")).decoration(TextDecoration.ITALIC, false)).lore(Formatters.mini(Formatters.lang().getString("gui.main.all.lore", "<white>Click me to view all players")).decoration(TextDecoration.ITALIC, false)).asGuiItem(event -> PlayerListMenu.initialise((Player) event.getWhoClicked())));
         populateMenu(gui, null);
     }
 
     private static void populatePlayer(Gui gui, OfflinePlayer target) {
-        gui.setItem(10, ItemBuilder.skull().owner(target).name(Formatters.mini(Formatters.lang().getString("gui.main.player_head.title", "<player>"), "player", Component.text(Formatters.getPossessionString(Objects.requireNonNull(target.getName())))).decoration(TextDecoration.ITALIC, false)).asGuiItem());
+        gui.setItem(10, ItemBuilder.skull().owner(target).name(Formatters.mini(Formatters.lang().getString("gui.main.player_head.title", "<player> statistics"), "player", Component.text(Formatters.getPossessionString(Objects.requireNonNull(target.getName())))).decoration(TextDecoration.ITALIC, false)).asGuiItem());
         gui.setItem(26, BackButton.getBackButton().asGuiItem(event -> PlayerListMenu.initialise((Player) event.getWhoClicked())));
         populateMenu(gui, target);
     }

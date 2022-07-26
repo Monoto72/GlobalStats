@@ -9,6 +9,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Tag;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -51,10 +52,17 @@ public class Formatters {
     }
 
     public static Component mini(String message) {
-        return MiniMessage.miniMessage().deserialize("<reset><white>" + message);
+        return MiniMessage.miniMessage().deserialize(message);
     }
 
     public static Component mini(String message, String placeholder, Component replacement) {
-        return MiniMessage.miniMessage().deserialize("<reset><white>" + message, Placeholder.component(placeholder, replacement));
+        return MiniMessage.miniMessage().deserialize(message, Placeholder.component(placeholder, replacement));
+    }
+
+    // TODO: Add support for multiple placeholders - Potentially done...
+    public static Component miniMulti(String message, List<String> placeholders, List<Component> replacements) {
+        Iterable<? extends TagResolver> placeholdersIterable = placeholders.stream().map(placeholder -> Placeholder.component(placeholder, replacements.get(placeholders.indexOf(placeholder)))).collect(Collectors.toList());
+
+        return MiniMessage.miniMessage().deserialize(message, TagResolver.resolver(placeholdersIterable));
     }
 }

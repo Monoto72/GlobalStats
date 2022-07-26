@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 
 public class PlayerListMenu {
     public static void initialise(Player player) {
-        PaginatedGui gui = Gui.paginated().title(Component.text("Statistics | Page: 1")).rows(4).pageSize(27).create();
+        PaginatedGui gui = Gui.paginated().title(Formatters.mini(Formatters.lang().getString("gui.main.title-player-list", "<black>Player List"), "page", Component.text(1))).rows(4).pageSize(27).create();
         populateMenu(gui);
 
         gui.setDefaultClickAction(event -> event.setCancelled(true));
@@ -27,7 +27,7 @@ public class PlayerListMenu {
 
     public static void populateMenu(PaginatedGui gui) {
 
-        Pagination.getPaginatedUtil(gui, null);
+        Pagination.getPaginatedUtil(gui, null, "player-list", "none");
         gui.setItem(31, ItemBuilder.from(Material.CHEST).name(Component.text("Global Statistics").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false))
                 .asGuiItem(event -> GlobalMenu.initialise((Player) event.getWhoClicked())));
 

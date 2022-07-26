@@ -5,41 +5,46 @@
 #
 # Please be aware that some values do not exist on the above site, this is due to them being placeholders from the plugin
 # i.e. <cmd>, <player>, <amount>, and any other unknown ones.
+#
+# If you want to use hex colors, please use the following format: <color:#FF5555>
 
 error:
   unknown_command: "<red>Unknown command: <gray><cmd>"
   no_permission: "<hover:show_text:'<gray><permission>'><red>You do not have the permission to do this!"
   invalid_usage: "<red>Invalid Usage!"
   never_played: "<red><player> has never played the server before."
+
 gui:
   util:
-    back: "Go back"
+    back: "<yellow>Go back"
     page:
-      forward: "Next page"
-      backward: "Last page"
+      forward: "<yellow>Next page"
+      backward: "<yellow>Last page"
     all_players:
-      title: "All players"
-      lore: "Click me to view all Players"
+      title: "<red>All players"
+      lore: "<white>Click me to view all Players"
 
 
   main: # First page Statistics Menu [Global, Player] statistics
-    title: "<black>Global Statistics"
+    title-global: "<black>Global Statistics"
+    title-player: "<black><player> <type> stats"
+    title-player-list: "<black>Player List"
     category:
       fishing:
-        title: "Fishing"
-        lore: "Total: <amount>"
+        title: "<green>Fishing"
+        lore: "<white>Total: <amount>"
       mining:
-        title: "Mining"
-        lore: "Total: <amount>"
+        title: "<green>Mining"
+        lore: "<white>Total: <amount>"
       killing:
-        title: "Killing"
-        lore: "Total: <amount>"
+        title: "<green>Killing"
+        lore: "<white>Total: <amount>"
       travelling:
-        title: "Traversed Blocks"
-        lore: "Total: <amount>"
+        title: "<green>Traversed Blocks"
+        lore: "<white>Total: <amount>"
       placing:
-        title: "Placing"
-        lore: "Total: <amount>"
+        title: "<green>Placing"
+        lore: "<white>Total: <amount>"
     player_head:
-      title: "<player> Statistics"
+      title: "<white><player> Statistics"
 

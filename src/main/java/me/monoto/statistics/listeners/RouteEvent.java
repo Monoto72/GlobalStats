@@ -67,7 +67,7 @@ public class RouteEvent implements Listener {
             Bukkit.getScheduler().runTaskLater(plugin, () -> player.sendMessage(
                     MiniMessage.miniMessage().deserialize(
                             "<black>[<white>GlobalStats<black>] <aqua>This server is running your plugin. It is running version <version>",
-                            Placeholder.component("version", Component.text(plugin.getServer().getVersion()))
+                            Placeholder.component("version", Component.text(plugin.getDescription().getVersion()))
                     )
             ), 20L * 2);
         }
