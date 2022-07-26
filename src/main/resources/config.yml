@@ -4,7 +4,3 @@
 # Notify OPs on join if the plugin is due an update?
 check-for-updates: true
 
-# Languages supported by this plugin
-# en_GB, en_FR
-language: "en_GB"
-

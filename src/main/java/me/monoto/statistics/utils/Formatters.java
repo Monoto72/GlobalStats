@@ -26,8 +26,8 @@ public class Formatters {
         return string.endsWith("s") ? string : string + "'s";
     }
 
-    public static TextComponent getPlayerSkullTitle(OfflinePlayer player) {
-        return Component.text().content(getPossessionString(Objects.requireNonNull(player.getName())) + " statistics").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false).build();
+    public static Component getPlayerSkullTitle(OfflinePlayer player) {
+        return Formatters.mini(Formatters.lang().getString("gui.main.player-head.title", "<player> statistics"), "player", Component.text(Formatters.getPossessionString(Objects.requireNonNull(player.getName()))).decoration(TextDecoration.ITALIC, false));
     }
 
     public static String getDistanceFormatter(double value) {

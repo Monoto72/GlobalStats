@@ -6,7 +6,7 @@
 
     <groupId>me.monoto</groupId>
     <artifactId>statistics</artifactId>
-    <version>1.2</version>
+    <version>1.31</version>
     <packaging>jar</packaging>
 
     <name>GlobalStats</name>

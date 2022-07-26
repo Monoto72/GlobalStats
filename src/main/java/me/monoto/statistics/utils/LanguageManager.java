@@ -5,56 +5,33 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class LanguageManager {
-    private final String language;
     private final Statistics plugin;
 
     private YamlConfiguration langFile;
 
-    private final ArrayList<String> languages = new ArrayList<>(List.of("en_GB", "en_FR"));
-
-    public LanguageManager(String language, Statistics plugin) {
-        this.language = language;
+    public LanguageManager(Statistics plugin) {
         this.plugin = plugin;
-
-        createLangFolder();
+        createLangFile();
     }
 
     public File getFile() {
-        return new File(this.plugin.getDataFolder() + "/lang/" + this.language + ".yml");
+        return new File(this.plugin.getDataFolder() + "/lang.yml");
     }
 
     public YamlConfiguration getFileConfig() {
         return langFile;
     }
 
-    private void createLangFolder() {
-        File langFolder = new File(this.plugin.getDataFolder() + "/lang");
-
-        if (!langFolder.exists()) {
-            if (!langFolder.mkdir()) {
-                this.plugin.getLogger().warning("Error creating Lang dir");
-                return;
-            }
+    private void createLangFile() {
+        if (!getFile().exists()) {
+            this.plugin.saveResource("lang.yml", false);
         }
-
-        File[] langContents = langFolder.listFiles();
-
-        languages.forEach(lang -> {
-            if (langContents != null) {
-                if (!Arrays.asList(langContents).contains(new File(this.plugin.getDataFolder() + "/lang/" + lang + ".yml"))) {
-                    this.plugin.saveResource("lang/" + lang + ".yml", false);
-                }
-            }
-        });
-        createLangFile();
+        createLangYaml();
     }
 
-    private void createLangFile() {
+    private void createLangYaml() {
         this.langFile = YamlConfiguration.loadConfiguration(getFile());
         saveLanguageConfig();
     }

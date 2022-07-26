@@ -1,4 +1,4 @@
-# Language file for en_GB
+# Language file for Global Statistics
 #
 
 # For formatters, you will want to read https://docs.adventure.kyori.net/minimessage/format.html
@@ -46,5 +46,5 @@ gui:
         title: "<green>Placing"
         lore: "<white>Total: <amount>"
     player_head:
-      title: "<white><player> Statistics"
+      title: "<player> Statistics"
 

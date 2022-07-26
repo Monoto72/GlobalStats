@@ -23,7 +23,6 @@ import java.util.Objects;
 public class GlobalMenu {
     public static void initialise(Player player) {
         Gui gui = Gui.gui().rows(3).title(Formatters.mini(Formatters.lang().getString("gui.main.title-global", "<black>Global Statistics"))).create();
-
         populateGlobal(gui);
 
         gui.setDefaultClickAction(event -> event.setCancelled(true));
@@ -45,7 +44,7 @@ public class GlobalMenu {
     }
 
     private static void populatePlayer(Gui gui, OfflinePlayer target) {
-        gui.setItem(10, ItemBuilder.skull().owner(target).name(Formatters.mini(Formatters.lang().getString("gui.main.player_head.title", "<player> statistics"), "player", Component.text(Formatters.getPossessionString(Objects.requireNonNull(target.getName())))).decoration(TextDecoration.ITALIC, false)).asGuiItem());
+        gui.setItem(10, ItemBuilder.skull().owner(target).name(Formatters.getPlayerSkullTitle(target).decoration(TextDecoration.ITALIC, false)).asGuiItem());
         gui.setItem(26, BackButton.getBackButton().asGuiItem(event -> PlayerListMenu.initialise((Player) event.getWhoClicked())));
         populateMenu(gui, target);
     }
@@ -80,31 +79,27 @@ public class GlobalMenu {
             default -> "0";
         };
 
-        lore.add(Formatters.mini(Formatters.lang().getString("gui.main.category." + type + ".lore"), "amount", Component.text(globalStatistic)).decoration(TextDecoration.ITALIC, false));
+        lore.add(Formatters.mini(Formatters.lang().getString("gui.main.category." + type + ".lore", "<white>Total: <amount>"), "amount", Component.text(globalStatistic)).decoration(TextDecoration.ITALIC, false));
 
         return lore;
     }
 
     private static List<Component> getLore(String type, OfflinePlayer target) {
         List<Component> lore = new ArrayList<>();
-        String defaultValue = "0";
 
         PlayerStatistics stats = target.getPlayer() != null ? (PlayerStatistics) StatisticsManager.getPlayerStatistics().get(target.getUniqueId())
                 : (PlayerStatistics) StatisticsManager.getOfflinePlayerStatistics().get(target.getUniqueId());
 
-        switch (type) {
-            case "fishing" -> defaultValue = String.valueOf(stats.getFishedFish());
-            case "mining" -> defaultValue = String.valueOf(stats.getMinedBlocks());
-            case "killing" -> defaultValue = String.valueOf(stats.getMobsKilled());
-            case "travelling" -> defaultValue = Formatters.getDistanceFormatter(stats.getTraversedBlocks());
-            case "placing" -> defaultValue = String.valueOf(stats.getPlacedBlocks());
-        }
+        String playerStats = switch (type) {
+            case "fishing" -> String.valueOf(stats.getFishedFish());
+            case "mining" -> String.valueOf(stats.getMinedBlocks());
+            case "killing" -> String.valueOf(stats.getMobsKilled());
+            case "travelling" -> Formatters.getDistanceFormatter(stats.getTraversedBlocks());
+            case "placing" -> String.valueOf(stats.getPlacedBlocks());
+            default -> "0";
+        };
 
-        TextComponent amount = Component.text().content("Total " + type + ": ").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)
-                .append(Component.text().content(defaultValue).color(NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false))
-                .build();
-
-        lore.add(amount);
+        lore.add(Formatters.mini(Formatters.lang().getString("gui.main.category." + type + ".lore", "<white>Total: <amount>"), "amount", Component.text(playerStats)).decoration(TextDecoration.ITALIC, false));
 
         return lore;
     }

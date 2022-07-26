@@ -35,7 +35,7 @@ public class PlayerListMenu {
             Bukkit.getOnlinePlayers().forEach(player -> {
                 PlayerStatistics stats = (PlayerStatistics) StatisticsManager.getPlayerStatistics().get(player.getUniqueId());
 
-                GuiItem item = ItemBuilder.skull().owner(player).name(Formatters.getPlayerSkullTitle(player)).asGuiItem(event -> {
+                GuiItem item = ItemBuilder.skull().owner(player).name(Formatters.getPlayerSkullTitle(player).decoration(TextDecoration.ITALIC, false)).asGuiItem(event -> {
                     if(Bukkit.getPlayer(stats.getPlayerUUID()) == null)  {
                         initialise((Player) event.getWhoClicked());
                     } else {

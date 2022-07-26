@@ -3,13 +3,9 @@ package me.monoto.statistics.utils;
 import dev.triumphteam.cmd.bukkit.BukkitCommandManager;
 import dev.triumphteam.cmd.bukkit.message.BukkitMessageKey;
 import dev.triumphteam.cmd.core.message.MessageKey;
-import dev.triumphteam.cmd.core.suggestion.SuggestionContext;
 import dev.triumphteam.cmd.core.suggestion.SuggestionKey;
 import me.monoto.statistics.Statistics;
-import me.monoto.statistics.commands.AllPlayersCommand;
-import me.monoto.statistics.commands.ForceUpdateCommand;
-import me.monoto.statistics.commands.GlobalStatisticsCommand;
-import me.monoto.statistics.commands.PlayerSearchCommand;
+import me.monoto.statistics.commands.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -49,7 +45,8 @@ public class CommandManager {
                 new PlayerSearchCommand(plugin),
                 new GlobalStatisticsCommand(plugin),
                 new AllPlayersCommand(plugin),
-                new ForceUpdateCommand(plugin)
+                new ForceUpdateCommand(plugin),
+                new ReloadCommand(plugin)
         );
     }
 }

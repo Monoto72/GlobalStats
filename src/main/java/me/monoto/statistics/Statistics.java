@@ -41,7 +41,7 @@ public final class Statistics extends JavaPlugin {
         this.database = new DatabaseClass(this);
         this.metric = new Metrics(this, bstatID);
 
-        setLanguage(new LanguageManager(getConfig().getString("language"), this).getFileConfig());
+        setLanguage(new LanguageManager(this).getFileConfig());
 
         new RouteEvent(this);
         new StatsEvent(this);
