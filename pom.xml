@@ -6,7 +6,7 @@
 
     <groupId>me.monoto</groupId>
     <artifactId>statistics</artifactId>
-    <version>1.31</version>
+    <version>1.4</version>
     <packaging>jar</packaging>
 
     <name>GlobalStats</name>
@@ -101,6 +101,12 @@
             <groupId>dev.triumphteam</groupId>
             <artifactId>triumph-gui</artifactId>
             <version>3.1.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.kyori</groupId>
+                    <artifactId>adventure-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>dev.triumphteam</groupId>

@@ -23,12 +23,13 @@ gui:
     all_players:
       title: "<red>All players"
       lore: "<white>Click me to view all Players"
+    offline_player: "<red>Can't check offline stats for this category"
 
 
   main: # First page Statistics Menu [Global, Player] statistics
-    title-global: "<black>Global Statistics"
-    title-player: "<black><player> <type> stats"
-    title-player-list: "<black>Player List"
+    title_global: "<black>Global Statistics"
+    title_player: "<black><player> <type> stats"
+    title_player_list: "<black>Player List"
     category:
       fishing:
         title: "<green>Fishing"
@@ -47,4 +48,6 @@ gui:
         lore: "<white>Total: <amount>"
     player_head:
       title: "<player> Statistics"
+
+
 

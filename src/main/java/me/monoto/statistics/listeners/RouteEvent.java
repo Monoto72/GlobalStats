@@ -7,16 +7,28 @@ import me.monoto.statistics.stats.StatisticsManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bstats.json.JsonObjectBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import static org.bukkit.Bukkit.getPluginManager;
+import static org.bukkit.Material.FISHING_ROD;
+import static org.bukkit.Material.NAME_TAG;
 
 public class RouteEvent implements Listener {
 
@@ -30,8 +42,9 @@ public class RouteEvent implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        
+
         DatabaseManager.getPlayer(player.getUniqueId());
+
         if (StatisticsManager.getPlayerStatistics().get(player.getUniqueId()) == null) {
             StatisticsManager.setPlayerStatistics(
                     player.getUniqueId(),

@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 
 public class PlayerListMenu {
     public static void initialise(Player player) {
-        PaginatedGui gui = Gui.paginated().title(Formatters.mini(Formatters.lang().getString("gui.main.title-player-list", "<black>Player List"), "page", Component.text(1))).rows(4).pageSize(27).create();
+        PaginatedGui gui = Gui.paginated().title(Formatters.mini(Formatters.lang().getString("gui.main.title_player_list", "<black>Player List"), "page", Component.text(1))).rows(4).pageSize(27).create();
         populateMenu(gui);
 
         gui.setDefaultClickAction(event -> event.setCancelled(true));

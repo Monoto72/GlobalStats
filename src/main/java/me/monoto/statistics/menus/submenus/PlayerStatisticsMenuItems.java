@@ -4,20 +4,31 @@ import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.PaginatedGui;
+import me.monoto.statistics.Statistics;
 import me.monoto.statistics.menus.GlobalMenu;
 import me.monoto.statistics.menus.utils.Pagination;
 import me.monoto.statistics.utils.Formatters;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionType;
 import org.checkerframework.checker.units.qual.C;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +49,7 @@ public class PlayerStatisticsMenuItems {
                 .asGuiItem(event -> GlobalMenu.initialise((Player) event.getWhoClicked(), target)));
 
         switch (type) {
-            case "fishing" -> getFish(gui);
+            case "fishing" -> getFish(gui, target); // Passes an online players stats if there are any
             case "killing" -> getKills(gui, target);
             case "travelling" -> getMovements(gui, target);
             case "mining", "placing" -> getBlocks(gui, type, target);
@@ -49,9 +60,35 @@ public class PlayerStatisticsMenuItems {
         gui.open(player);
     }
 
-    private static void getFish(PaginatedGui gui) {
+    private static void getFish(PaginatedGui gui, OfflinePlayer target) { // PDC Currently doesn't allow for OfflinePlayers
+        if (target != null && target.getPlayer() != null) {
+            JSONParser parser = new JSONParser();
 
+            try {
+                JSONObject json = (JSONObject) parser.parse(target.getPlayer().getPersistentDataContainer().get(new NamespacedKey(Statistics.getInstance(), "FISHING_STATS"), PersistentDataType.STRING));
+
+                for (Object key : json.keySet()) {
+                    ItemStack itemStack = new ItemStack(Material.valueOf(key.toString()), 1);
+                    
+                    if (Objects.equals(key.toString(), "POTION")) {
+                        itemStack = new ItemStack(Material.POTION, 1);
+                        ItemMeta itemMeta = itemStack.getItemMeta();
+                        PotionMeta potionMeta = (PotionMeta) itemMeta;
+                        PotionData potionData = new PotionData(PotionType.WATER);
+                        
+                        potionMeta.setBasePotionData(potionData);
+                        itemStack.setItemMeta(itemMeta);
+                    }
+
+                    GuiItem item = ItemBuilder.from(itemStack).lore(Formatters.mini(Formatters.lang().getString("gui.main.fishing.lore", "<white>Total: <amount>"), "amount", Component.text(((Long) json.get(key)).intValue())).decoration(TextDecoration.ITALIC, false)).asGuiItem();
+                    gui.addItem(item);
+                }
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        }
     }
+
 
     private static void getKills(PaginatedGui gui, OfflinePlayer target) {
         for (EntityType type : EntityType.values()) {
@@ -73,12 +110,14 @@ public class PlayerStatisticsMenuItems {
                     }
 
                     if (material != null) {
-                        GuiItem item = ItemBuilder.from(material).name(Component.text(Formatters.capitaliseEachWord(type.name())).decoration(TextDecoration.ITALIC, false))
+                        GuiItem item = ItemBuilder.from(material).name(Component.translatable(type).decoration(TextDecoration.ITALIC, false))
                                 .lore(Formatters.mini(Formatters.lang().getString("gui.main.killing.lore", "<white>Total: <amount>"), "amount", Component.text(statAmount)).decoration(TextDecoration.ITALIC, false)).asGuiItem();
                         gui.addItem(item);
                     }
                 }
-            } catch (IllegalArgumentException ignore) {}
+            } catch (IllegalArgumentException exception) {
+                exception.printStackTrace();
+            }
         }
     }
 

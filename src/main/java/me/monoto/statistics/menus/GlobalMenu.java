@@ -13,8 +13,10 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +24,7 @@ import java.util.Objects;
 
 public class GlobalMenu {
     public static void initialise(Player player) {
-        Gui gui = Gui.gui().rows(3).title(Formatters.mini(Formatters.lang().getString("gui.main.title-global", "<black>Global Statistics"))).create();
+        Gui gui = Gui.gui().rows(3).title(Formatters.mini(Formatters.lang().getString("gui.main.title_global", "<black>Global Statistics"))).create();
         populateGlobal(gui);
 
         gui.setDefaultClickAction(event -> event.setCancelled(true));
@@ -30,7 +32,7 @@ public class GlobalMenu {
     }
 
     public static void initialise(Player player, OfflinePlayer oPlayer) {
-        Gui gui = Gui.gui().rows(3).title(Formatters.mini(Formatters.lang().getString("gui.main.title-global", "<black>Global Statistics"))).create();
+        Gui gui = Gui.gui().rows(3).title(Formatters.mini(Formatters.lang().getString("gui.main.title_global", "<black>Global Statistics"))).create();
 
         populatePlayer(gui, oPlayer);
 
@@ -50,7 +52,13 @@ public class GlobalMenu {
     }
 
     private static void populateMenu(Gui gui, OfflinePlayer target) {
-        gui.setItem(12, ItemBuilder.from(Material.FISHING_ROD).name(Formatters.mini(Formatters.lang().getString("gui.main.category.fishing.title", "Fishing")).decoration(TextDecoration.ITALIC, false)).lore(target == null ? getLore("fishing") : getLore("fishing", target)).asGuiItem());
+        gui.setItem(12, ItemBuilder.from(Material.FISHING_ROD).name(Formatters.mini(Formatters.lang().getString("gui.main.category.fishing.title", "Fishing")).decoration(TextDecoration.ITALIC, false)).lore(target == null ? getLore("fishing") : getLore("fishing", target)).asGuiItem(event -> {
+            if (target != null && target.getPlayer() != null) {
+                if (target.getPlayer().getPersistentDataContainer().has(new NamespacedKey(Statistics.getInstance(), "FISHING_STATS"), PersistentDataType.STRING)) {
+                    PlayerStatisticsMenuItems.getItemPreview("fishing", (Player) event.getWhoClicked(), target);
+                }
+            }
+        }));
         gui.setItem(13, ItemBuilder.from(Material.DIAMOND_PICKAXE).name(Formatters.mini(Formatters.lang().getString("gui.main.category.mining.title", "Mining")).decoration(TextDecoration.ITALIC, false)).lore(target == null ? getLore("mining") : getLore("mining", target)).asGuiItem(event -> {
             if (target != null) PlayerStatisticsMenuItems.getItemPreview("mining", (Player) event.getWhoClicked(), target);
         }));
@@ -100,6 +108,10 @@ public class GlobalMenu {
         };
 
         lore.add(Formatters.mini(Formatters.lang().getString("gui.main.category." + type + ".lore", "<white>Total: <amount>"), "amount", Component.text(playerStats)).decoration(TextDecoration.ITALIC, false));
+
+        if (Objects.equals(type, "fishing") && target.getPlayer() == null) {
+            lore.add(Formatters.mini(Formatters.lang().getString("gui.util.offline_player", "<red>This category doesn't support offline viewing")));
+        }
 
         return lore;
     }
