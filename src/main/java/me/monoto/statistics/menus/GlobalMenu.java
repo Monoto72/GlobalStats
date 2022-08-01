@@ -15,12 +15,14 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Powerable;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class GlobalMenu {
     public static void initialise(Player player) {
@@ -88,6 +90,25 @@ public class GlobalMenu {
         };
 
         lore.add(Formatters.mini(Formatters.lang().getString("gui.main.category." + type + ".lore", "<white>Total: <amount>"), "amount", Component.text(globalStatistic)).decoration(TextDecoration.ITALIC, false));
+
+        StatisticsManager.getTopThreeStatistics().forEach((stat, playerHashmap) -> {
+            if (Objects.equals(type, stat)) {
+                int count = 0;
+
+                for (HashMap.Entry<String, Integer> data : playerHashmap.entrySet()) {
+                    if (data.getValue() != 0) {
+                        lore.add(Formatters.miniMulti(
+                                Formatters.lang().getString(
+                                        "gui.main.category." + type + ".top_players." + (count+1), "<yellow>" + (count+1) + "<white>: <player> <amount>"
+                                ),
+                                List.of("player", "amount"),
+                                List.of(Component.text(data.getKey()), Objects.equals(type, "travelling") ? Component.text(Formatters.getDistanceFormatter(data.getValue())) : Component.text(data.getValue())))
+                        );
+                    }
+                    count++;
+                }
+            }
+        });
 
         return lore;
     }

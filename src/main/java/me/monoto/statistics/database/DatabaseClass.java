@@ -39,6 +39,7 @@ public class DatabaseClass {
             }
             createTable();
             DatabaseManager.getAllStatistics();
+            DatabaseManager.getTopThreeStatistics();
         }
     }
 

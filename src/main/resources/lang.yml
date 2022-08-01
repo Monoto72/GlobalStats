@@ -34,18 +34,38 @@ gui:
       fishing:
         title: "<green>Fishing"
         lore: "<white>Total: <amount>"
+        top_players:
+          1: "<green>1<white>: <player> <amount>"
+          2: "<yellow>2<white>: <player> <amount>"
+          3: "<red>3<white>: <player> <amount>"
       mining:
         title: "<green>Mining"
         lore: "<white>Total: <amount>"
+        top_players:
+          1: "<green>1<white>: <player> <amount>"
+          2: "<yellow>2<white>: <player> <amount>"
+          3: "<red>3<white>: <player> <amount>"
       killing:
         title: "<green>Killing"
         lore: "<white>Total: <amount>"
+        top_players:
+          1: "<green>1<white>: <player> <amount>"
+          2: "<yellow>2<white>: <player> <amount>"
+          3: "<red>3<white>: <player> <amount>"
       travelling:
         title: "<green>Traversed Blocks"
         lore: "<white>Total: <amount>"
+        top_players:
+          1: "<green>1<white>: <player> <amount>"
+          2: "<yellow>2<white>: <player> <amount>"
+          3: "<red>3<white>: <player> <amount>"
       placing:
         title: "<green>Placing"
         lore: "<white>Total: <amount>"
+        top_players:
+          1: "<green>1<white>: <player> <amount>"
+          2: "<yellow>2<white>: <player> <amount>"
+          3: "<red>3<white>: <player> <amount>"
     player_head:
       title: "<player> Statistics"
 

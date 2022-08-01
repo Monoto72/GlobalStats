@@ -3,7 +3,6 @@ package me.monoto.statistics.stats;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +14,7 @@ public class StatisticsManager {
     private static GlobalStatistics globalStatistics;
     public static HashMap<UUID, Object> offlinePlayerStatistics = new HashMap<>();
     public static HashMap<UUID, Object> playerStatistics = new HashMap<>();
+    public static HashMap<String, HashMap<String, Integer>> topThreeStatistics = new HashMap<>();
 
     public static void setGlobalStatistics(int fished, int mined, int killed, int placed, int traversed) {
         GlobalStatistics stats = new GlobalStatistics();
@@ -50,6 +50,10 @@ public class StatisticsManager {
         hashmap.put(stats.getPlayerUUID(), stats);
     }
 
+    public static void setTopThreeStatistics(HashMap<String, HashMap<String, Integer>> topThree) {
+        topThreeStatistics = topThree;
+    }
+
     public static GlobalStatistics getGlobalStatistics() {
         return globalStatistics;
     }
@@ -60,6 +64,10 @@ public class StatisticsManager {
 
     public static HashMap<UUID, Object> getOfflinePlayerStatistics() {
         return offlinePlayerStatistics;
+    }
+
+    public static HashMap<String, HashMap<String, Integer>> getTopThreeStatistics() {
+        return topThreeStatistics;
     }
 
     public static int getTotalBlocksTraversed(OfflinePlayer player) {

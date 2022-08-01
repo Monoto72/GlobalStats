@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.UUID;
+import java.util.*;
 
 public class DatabaseManager {
     public static void getAllStatistics() {
@@ -87,28 +87,35 @@ public class DatabaseManager {
         DatabaseClass.query("UPDATE `player_statistics` SET `name`=\"" + name + "\" WHERE `uuid`=\"" + uuid + "\"");
     }
 
-    /*
-    public static void getTopThreePlayers() {
-        String sql = "SELECT TOP 3 * FROM `player_statistics`";
+    public static void getTopThreeStatistics() {
+        ArrayList<String> queries = new ArrayList<>();
+        queries.add("SELECT `name`, `fished` as `total` FROM `player_statistics` ORDER BY `fished` DESC LIMIT 3");
+        queries.add("SELECT `name`, `mined` as `total` FROM `player_statistics` ORDER BY `mined` DESC LIMIT 3");
+        queries.add("SELECT `name`, `killed` as `total` FROM `player_statistics` ORDER BY `killed` DESC LIMIT 3");
+        queries.add("SELECT `name`, `placed` as `total` FROM `player_statistics` ORDER BY `placed` DESC LIMIT 3");
+        queries.add("SELECT `name`, `traversed` as `total` FROM `player_statistics` ORDER BY `traversed` DESC LIMIT 3");
 
-        try (Connection connection = DatabaseClass.connect();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)
-        ) {
-            while (resultSet.next()) {
-                StatisticsManager.setTopThreeStatistics(
-                        UUID.fromString(resultSet.getString("uuid")),
-                        resultSet.getString("name"),
-                        resultSet.getInt("fished"),
-                        resultSet.getInt("mined"),
-                        resultSet.getInt("killed"),
-                        resultSet.getDouble("balance"),
-                        resultSet.getInt("placed")
-                );
+        HashMap<String, HashMap<String, Integer>> topThree = new HashMap<>();
+
+        for (int index = 0; index < queries.size(); index++) {
+            try (Connection connection = DatabaseClass.connect();
+                 Statement statement = connection.createStatement();
+                 ResultSet resultSet = statement.executeQuery(queries.get(index))
+            ) {
+                HashMap<String, Integer> playerData = new HashMap<>();
+                while (resultSet.next()) {
+                    playerData.put(resultSet.getString("name"), resultSet.getInt("total"));
+                }
+
+                topThree.put(index == 0 ? "fishing"
+                        : (index == 1 ? "mining"
+                        : (index == 2 ? "killing"
+                        : (index == 3 ? "placing"
+                        : "travelling"))), playerData);
+            } catch (SQLException exception) {
+                exception.printStackTrace();
             }
-        } catch (SQLException exception) {
-            exception.printStackTrace();
         }
+        StatisticsManager.setTopThreeStatistics(topThree);
     }
-     */
 }
