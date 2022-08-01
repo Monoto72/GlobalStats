@@ -58,12 +58,14 @@ public final class Statistics extends JavaPlugin {
             }
         });
 
-        if (!Bukkit.getOnlinePlayers().isEmpty()) {
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+            if (!Bukkit.getOnlinePlayers().isEmpty()) {
                 getServer().getOnlinePlayers().forEach(player -> DatabaseManager.updatePlayer(player.getUniqueId()));
                 DatabaseManager.getAllStatistics();
-            }, 1L, 20L * 300);
-        }
+                DatabaseManager.getTopThreeStatistics();
+            }
+        }, 1L, 20L * 300); // 300
+
     }
 
     @Override

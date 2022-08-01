@@ -4,17 +4,14 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class StatisticsManager {
     private static GlobalStatistics globalStatistics;
     public static HashMap<UUID, Object> offlinePlayerStatistics = new HashMap<>();
     public static HashMap<UUID, Object> playerStatistics = new HashMap<>();
-    public static HashMap<String, HashMap<String, Integer>> topThreeStatistics = new HashMap<>();
+    public static HashMap<String, LinkedHashMap<String, Integer>> topThreeStatistics = new HashMap<>();
 
     public static void setGlobalStatistics(int fished, int mined, int killed, int placed, int traversed) {
         GlobalStatistics stats = new GlobalStatistics();
@@ -50,7 +47,7 @@ public class StatisticsManager {
         hashmap.put(stats.getPlayerUUID(), stats);
     }
 
-    public static void setTopThreeStatistics(HashMap<String, HashMap<String, Integer>> topThree) {
+    public static void setTopThreeStatistics(HashMap<String, LinkedHashMap<String, Integer>> topThree) {
         topThreeStatistics = topThree;
     }
 
@@ -66,7 +63,7 @@ public class StatisticsManager {
         return offlinePlayerStatistics;
     }
 
-    public static HashMap<String, HashMap<String, Integer>> getTopThreeStatistics() {
+    public static HashMap<String, LinkedHashMap<String, Integer>> getTopThreeStatistics() {
         return topThreeStatistics;
     }
 

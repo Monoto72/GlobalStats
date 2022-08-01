@@ -95,14 +95,14 @@ public class DatabaseManager {
         queries.add("SELECT `name`, `placed` as `total` FROM `player_statistics` ORDER BY `placed` DESC LIMIT 3");
         queries.add("SELECT `name`, `traversed` as `total` FROM `player_statistics` ORDER BY `traversed` DESC LIMIT 3");
 
-        HashMap<String, HashMap<String, Integer>> topThree = new HashMap<>();
+        HashMap<String, LinkedHashMap<String, Integer>> topThree = new HashMap<>();
 
         for (int index = 0; index < queries.size(); index++) {
             try (Connection connection = DatabaseClass.connect();
                  Statement statement = connection.createStatement();
                  ResultSet resultSet = statement.executeQuery(queries.get(index))
             ) {
-                HashMap<String, Integer> playerData = new HashMap<>();
+                LinkedHashMap<String, Integer> playerData = new LinkedHashMap<>();
                 while (resultSet.next()) {
                     playerData.put(resultSet.getString("name"), resultSet.getInt("total"));
                 }
