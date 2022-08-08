@@ -115,9 +115,7 @@ public class PlayerStatisticsMenuItems {
                         gui.addItem(item);
                     }
                 }
-            } catch (IllegalArgumentException exception) {
-                exception.printStackTrace();
-            }
+            } catch (IllegalArgumentException ignored) {} // Catch unknown EntityTypes for example, Player, etc.
         }
     }
 
