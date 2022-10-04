@@ -33,12 +33,16 @@ public class CommandManager {
                     Placeholder.component("cmd", Component.text("/stats " + context.getSubCommand())))
             );
         });
+
+        // New Triumph Command API doesn't have perm context?????
+        /*
         commandManager.registerMessage(BukkitMessageKey.NO_PERMISSION, (sender, context) -> {
             sender.sendMessage(MiniMessage.miniMessage().deserialize(
                     plugin.getLanguage().getString("error.no_permission", "<red>No permission"),
-                    Placeholder.component("permission", Component.text())
+                    Placeholder.component("permission", Component.text(context.g))
             ));
         });
+         */
 
         commandManager.registerCommand(
                 new GlobalStatisticsCommand(plugin),
