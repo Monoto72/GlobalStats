@@ -36,7 +36,7 @@ public class CommandManager {
         commandManager.registerMessage(BukkitMessageKey.NO_PERMISSION, (sender, context) -> {
             sender.sendMessage(MiniMessage.miniMessage().deserialize(
                     plugin.getLanguage().getString("error.no_permission", "<red>No permission"),
-                    Placeholder.component("permission", Component.text(context.getPermission()))
+                    Placeholder.component("permission", Component.text())
             ));
         });
 

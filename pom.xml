@@ -6,7 +6,7 @@
 
     <groupId>me.monoto</groupId>
     <artifactId>statistics</artifactId>
-    <version>1.41</version>
+    <version>1.5</version>
     <packaging>jar</packaging>
 
     <name>GlobalStats</name>
@@ -88,6 +88,10 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -118,6 +122,12 @@
             <artifactId>bstats-bukkit</artifactId>
             <version>3.0.0</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.11.1</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

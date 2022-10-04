@@ -7,7 +7,9 @@ import me.monoto.statistics.stats.PlayerStatistics;
 import me.monoto.statistics.stats.StatisticsManager;
 import me.monoto.statistics.utils.CommandManager;
 import me.monoto.statistics.utils.LanguageManager;
+import me.monoto.statistics.utils.PlaceholderManager;
 import me.monoto.statistics.utils.UpdateChecker;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -47,6 +49,8 @@ public final class Statistics extends JavaPlugin {
         new StatsEvent(this);
 
         CommandManager.setupCommandManager(this);
+
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) new PlaceholderManager().register();
 
         // Update checker
         (new UpdateChecker(this, spigotID)).getLatestVersion(version -> {

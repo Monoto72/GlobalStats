@@ -4,3 +4,5 @@ main: me.monoto.statistics.Statistics
 api-version: 1.18
 authors: [ Monoto ]
 description: A plugin to view chosen statistics on the server
+  
+softdepend: [PlaceholderAPI]
