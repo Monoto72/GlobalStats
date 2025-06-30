@@ -6,6 +6,7 @@ public class GlobalStatistics {
     private int mobsKilled;
     private int placedBlocks;
     private int traversedBlocks;
+    private int harvestedCrops;
 
     public GlobalStatistics() {
         this.fishedFish = 0;
@@ -13,6 +14,7 @@ public class GlobalStatistics {
         this.mobsKilled = 0;
         this.placedBlocks = 0;
         this.traversedBlocks = 0;
+        this.harvestedCrops = 0;
     }
 
 
@@ -54,5 +56,14 @@ public class GlobalStatistics {
 
     public int getTraversedBlocks() {
         return this.traversedBlocks;
+    }
+
+
+    public int getHarvestedCrops() {
+        return harvestedCrops;
+    }
+
+    public void setHarvestedCrops(int value) {
+        this.harvestedCrops = value;
     }
 }

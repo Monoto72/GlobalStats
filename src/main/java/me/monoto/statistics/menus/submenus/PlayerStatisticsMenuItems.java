@@ -1,5 +1,8 @@
 package me.monoto.statistics.menus.submenus;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
@@ -7,33 +10,23 @@ import dev.triumphteam.gui.guis.PaginatedGui;
 import me.monoto.statistics.Statistics;
 import me.monoto.statistics.menus.GlobalMenu;
 import me.monoto.statistics.menus.utils.Pagination;
+import me.monoto.statistics.utils.BlockCache;
 import me.monoto.statistics.utils.Formatters;
+import me.monoto.statistics.utils.FormattersV2;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Statistic;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
-import org.checkerframework.checker.units.qual.C;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class PlayerStatisticsMenuItems {
 
@@ -48,11 +41,14 @@ public class PlayerStatisticsMenuItems {
         gui.setItem(31, ItemBuilder.skull().owner(target).name(Formatters.mini(Formatters.lang().getString("gui.main.player_head.title", "<player>"), "player", Component.text(Formatters.getPossessionString(Objects.requireNonNull(target.getName())))).decoration(TextDecoration.ITALIC, false))
                 .asGuiItem(event -> GlobalMenu.initialise((Player) event.getWhoClicked(), target)));
 
+        gui.clearPageItems();
+
         switch (type) {
-            case "fishing" -> getFish(gui, target); // Passes an online players stats if there are any
+            case "fishing" -> getFish(gui, target);
             case "killing" -> getKills(gui, target);
             case "travelling" -> getMovements(gui, target);
             case "mining", "placing" -> getBlocks(gui, type, target);
+            case "crops" -> getCropHarvestStats(gui, target);
         }
 
         gui.setDefaultClickAction(event -> event.setCancelled(true));
@@ -62,29 +58,44 @@ public class PlayerStatisticsMenuItems {
 
     private static void getFish(PaginatedGui gui, OfflinePlayer target) { // PDC Currently doesn't allow for OfflinePlayers
         if (target != null && target.getPlayer() != null) {
-            JSONParser parser = new JSONParser();
 
             try {
-                JSONObject json = (JSONObject) parser.parse(target.getPlayer().getPersistentDataContainer().get(new NamespacedKey(Statistics.getInstance(), "FISHING_STATS"), PersistentDataType.STRING));
+                Player onlineTarget = target.getPlayer();
+                if (onlineTarget == null) return;
 
-                for (Object key : json.keySet()) {
-                    ItemStack itemStack = new ItemStack(Material.valueOf(key.toString()), 1);
-                    
-                    if (Objects.equals(key.toString(), "POTION")) {
-                        itemStack = new ItemStack(Material.POTION, 1);
-                        ItemMeta itemMeta = itemStack.getItemMeta();
-                        PotionMeta potionMeta = (PotionMeta) itemMeta;
-                        PotionData potionData = new PotionData(PotionType.WATER);
-                        
-                        potionMeta.setBasePotionData(potionData);
-                        itemStack.setItemMeta(itemMeta);
+                String data = onlineTarget.getPersistentDataContainer().get(
+                        new NamespacedKey(Statistics.getInstance(), "FISHING_STATS"),
+                        PersistentDataType.STRING
+                );
+
+                if (data == null) return;
+
+                JsonObject json = com.google.gson.JsonParser.parseString(data).getAsJsonObject();
+
+                for (String key : json.keySet()) {
+                    ItemStack itemStack = new ItemStack(Material.valueOf(key), 1);
+
+                    if (key.equals("POTION")) {
+                        itemStack = new ItemStack(Material.POTION);
+                        PotionMeta potionMeta = (PotionMeta) itemStack.getItemMeta();
+                        potionMeta.setBasePotionType(PotionType.WATER);
+                        itemStack.setItemMeta(potionMeta);
                     }
 
-                    GuiItem item = ItemBuilder.from(itemStack).lore(Formatters.mini(Formatters.lang().getString("gui.main.fishing.lore", "<white>Total: <amount>"), "amount", Component.text(((Long) json.get(key)).intValue())).decoration(TextDecoration.ITALIC, false)).asGuiItem();
+                    int amount = json.get(key).getAsInt();
+
+                    GuiItem item = ItemBuilder.from(itemStack)
+                            .lore(Formatters.mini(
+                                    Formatters.lang().getString("gui.main.fishing.lore", "<white>Total: <amount>"),
+                                    "amount", Component.text(amount)
+                            ).decoration(TextDecoration.ITALIC, false))
+                            .asGuiItem();
+
                     gui.addItem(item);
                 }
-            } catch (Exception exception) {
-                exception.printStackTrace();
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -103,7 +114,7 @@ public class PlayerStatisticsMenuItems {
                     } catch (IllegalArgumentException exception) {
                         material = switch (type) {
                             case IRON_GOLEM -> Material.IRON_INGOT;
-                            case SNOWMAN -> Material.SNOWBALL;
+                            case SNOW_GOLEM -> Material.SNOWBALL;
                             case WITHER -> Material.WITHER_SKELETON_SKULL;
                             default -> null;
                         };
@@ -127,10 +138,10 @@ public class PlayerStatisticsMenuItems {
         for (int index = 0; index < itemNames.size(); index++) {
             int statAmount = target.getStatistic(Statistic.JUMP);
             if (statistics.get(index) != Statistic.JUMP) {
-                statAmount = (int) Math.floor(target.getStatistic(statistics.get(index))) / 100;
+                statAmount = (int) (double) target.getStatistic(statistics.get(index)) / 100;
             }
 
-            GuiItem item = ItemBuilder.from(materials.get(index)).lore(Formatters.mini(Formatters.lang().getString("gui.main.killing.lore", "<white>Total: <amount>"), "amount", Component.text(statAmount)).decoration(TextDecoration.ITALIC, false)).flags(ItemFlag.HIDE_POTION_EFFECTS)
+            GuiItem item = ItemBuilder.from(materials.get(index)).lore(Formatters.mini(Formatters.lang().getString("gui.main.killing.lore", "<white>Total: <amount>"), "amount", Component.text(statAmount)).decoration(TextDecoration.ITALIC, false))// .flags(ItemFlag.)
                     .name(Component.text(itemNames.get(index)).color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false))
                     .asGuiItem();
             gui.addItem(item);
@@ -138,16 +149,151 @@ public class PlayerStatisticsMenuItems {
     }
 
     private static void getBlocks(PaginatedGui gui, String type, OfflinePlayer target) {
-        Statistic statistic = Objects.equals(type, "mining") ? Statistic.MINE_BLOCK : Statistic.USE_ITEM;
-        String typeLore = Objects.equals(type, "mining") ? "gui.main.mining.lore" : "gui.main.placing.lore";
-        
-        for (Material material : Material.values()) {
-            if (target.getStatistic(statistic, material) > 0 && material.isBlock()) {
-                int statAmount = target.getStatistic(statistic, material);
+            Statistic statistic = type.equals("mining") ? Statistic.MINE_BLOCK : Statistic.USE_ITEM;
+            String typeLore = type.equals("mining") ? "gui.main.mining.lore" : "gui.main.placing.lore";
 
-                GuiItem item = ItemBuilder.from(material).lore(Formatters.mini(Formatters.lang().getString(typeLore, "<white>Total: <amount>"), "amount", Component.text(statAmount)).decoration(TextDecoration.ITALIC, false)).asGuiItem();
+            List<Material> relevantMaterials = BlockCache.getPlaceableItems();
+
+            for (Material material : relevantMaterials) {
+                if (!material.isItem()) continue;
+
+                int statAmount = target.getStatistic(statistic, material);
+                if (statAmount <= 0) continue;
+
+                Bukkit.getLogger().info(material.name() + ": " + statAmount);
+
+
+                GuiItem item = ItemBuilder.from(material)
+                        .lore(Formatters.mini(
+                                        Formatters.lang().getString(typeLore, "<white>Total: <amount>"),
+                                        "amount", Component.text(statAmount))
+                                .decoration(TextDecoration.ITALIC, false))
+                        .asGuiItem();
+
                 gui.addItem(item);
+        };
+    }
+
+    private static void getCropHarvestStats(PaginatedGui gui, OfflinePlayer target) {
+        Statistic statistic = Statistic.MINE_BLOCK;
+        String typeLore = "gui.main.crops.lore";
+
+        Player onlineTarget = target.getPlayer();
+        Set<Material> processedMaterials = new HashSet<>();
+
+        // Helper to fetch additional counts from persistent JSON data
+        BiFunction<Material[], Player, Integer> getAdditionalCount = (materials, player) -> {
+            int extraCount = 0;
+            if (player == null) return 0;
+
+            try {
+                String jsonData = player.getPersistentDataContainer().get(
+                        new NamespacedKey(Statistics.getInstance(), "CUSTOM_CROP_STATS"),
+                        PersistentDataType.STRING
+                );
+                if (jsonData != null) {
+                    JsonObject json = JsonParser.parseString(jsonData).getAsJsonObject();
+                    for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+                        JsonObject cropData = entry.getValue().getAsJsonObject();
+                        String matName = cropData.get("material").getAsString();
+                        int count = cropData.get("count").getAsInt();
+
+                        for (Material m : materials) {
+                            if (matName.equalsIgnoreCase(m.name())) {
+                                extraCount += count;
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return extraCount;
+        };
+
+        // 1. Process paired crops from BI_MAP
+        for (Material crop : BlockCache.BI_MAP.keySet()) {
+            if (!crop.isItem()) continue;
+            if (crop.name().endsWith("_SEEDS") || !processedMaterials.add(crop)) continue;
+
+            Material pair = BlockCache.resolve(crop);
+            processedMaterials.add(pair);
+
+            int totalStat = target.getStatistic(statistic, crop) + target.getStatistic(statistic, pair);
+            totalStat += getAdditionalCount.apply(new Material[]{crop, pair}, onlineTarget);
+
+            if (totalStat <= 0) continue;
+
+            GuiItem item = ItemBuilder.from(crop)
+                    .lore(Formatters.mini(
+                                    Formatters.lang().getString(typeLore, "<white>Total: <amount>"),
+                                    "amount", Component.text(totalStat))
+                            .decoration(TextDecoration.ITALIC, false))
+                    .asGuiItem();
+
+            gui.addItem(item);
+        }
+
+        // 2. Process allowed crops not already processed
+        for (Material crop : BlockCache.getAllowedCrops()) {
+            if (!crop.isItem()) continue;
+            if (processedMaterials.contains(crop)) continue;
+
+            Material pair = BlockCache.BI_MAP.getOrDefault(crop, crop);
+            if (!processedMaterials.add(crop)) continue;
+            processedMaterials.add(pair);
+
+            int totalStat = target.getStatistic(statistic, crop) + target.getStatistic(statistic, pair);
+            totalStat += getAdditionalCount.apply(new Material[]{crop, pair}, onlineTarget);
+
+            if (totalStat <= 0) continue;
+
+            GuiItem item = ItemBuilder.from(crop)
+                    .lore(Formatters.mini(
+                                    Formatters.lang().getString(typeLore, "<white>Total: <amount>"),
+                                    "amount", Component.text(totalStat))
+                            .decoration(TextDecoration.ITALIC, false))
+                    .asGuiItem();
+
+            gui.addItem(item);
+        }
+
+        // 3. Process wild crops stats from WILD_CROPS_STATS
+        if (onlineTarget != null) {
+            try {
+                String extraData = onlineTarget.getPersistentDataContainer().get(
+                        new NamespacedKey(Statistics.getInstance(), "WILD_CROPS_STATS"),
+                        PersistentDataType.STRING
+                );
+
+                if (extraData != null) {
+                    JsonObject json = JsonParser.parseString(extraData).getAsJsonObject();
+
+                    for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+                        JsonObject cropData = entry.getValue().getAsJsonObject();
+                        int count = cropData.get("count").getAsInt();
+                        Material cropMaterial = Material.valueOf(cropData.get("material").getAsString());
+
+                        if (!cropMaterial.isItem() || !processedMaterials.add(cropMaterial)) continue;
+
+                        String displayName = cropData.get("name").getAsString();
+
+                        GuiItem item = ItemBuilder.from(cropMaterial)
+                                .name(FormattersV2.format(displayName))
+                                .lore(Formatters.mini(
+                                                Formatters.lang().getString(typeLore, "<white>Total: <amount>"),
+                                                "amount", Component.text(count))
+                                        .decoration(TextDecoration.ITALIC, false))
+                                .asGuiItem();
+
+                        gui.addItem(item);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
+
 }

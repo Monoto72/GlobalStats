@@ -9,11 +9,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class StatisticsManager {
     private static GlobalStatistics globalStatistics;
-    public static HashMap<UUID, Object> offlinePlayerStatistics = new HashMap<>();
-    public static HashMap<UUID, Object> playerStatistics = new HashMap<>();
+    public static HashMap<UUID, PlayerStatistics> offlinePlayerStatistics = new HashMap<>();
+    public static HashMap<UUID, PlayerStatistics> playerStatistics = new HashMap<>();
     public static HashMap<String, LinkedHashMap<String, Integer>> topThreeStatistics = new HashMap<>();
 
-    public static void setGlobalStatistics(int fished, int mined, int killed, int placed, int traversed) {
+    public static void setGlobalStatistics(int fished, int mined, int killed, int placed, int traversed, int harvestedCrops) {
         GlobalStatistics stats = new GlobalStatistics();
 
         stats.setFishedFish(fished);
@@ -21,19 +21,20 @@ public class StatisticsManager {
         stats.setMobsKilled(killed);
         stats.setPlacedBlocks(placed);
         stats.setTraversedBlocks(traversed);
+        stats.setHarvestedCrops(harvestedCrops);
 
         globalStatistics = stats;
     }
 
-    public static void setPlayerStatistics(UUID uuid, String name, int fished, int mined, int killed, int placed, int traversed) {
-        setStatistics(uuid, name, fished, mined, killed, placed, traversed, playerStatistics);
+    public static void setPlayerStatistics(UUID uuid, String name, int fished, int mined, int killed, int placed, int traversed, int harvestedCrops) {
+        setStatistics(uuid, name, fished, mined, killed, placed, traversed, harvestedCrops, playerStatistics);
     }
 
-    public static void setOfflinePlayerStatistics(UUID uuid, String name, int fished, int mined, int killed, int placed, int traversed) {
-        setStatistics(uuid, name, fished, mined, killed, placed, traversed, offlinePlayerStatistics);
+    public static void setOfflinePlayerStatistics(UUID uuid, String name, int fished, int mined, int killed, int placed, int traversed, int harvestedCrops) {
+        setStatistics(uuid, name, fished, mined, killed, placed, traversed, harvestedCrops, offlinePlayerStatistics);
     }
 
-    private static void setStatistics(UUID uuid, String name, int fished, int mined, int killed, int placed, int traversed, HashMap<UUID, Object> hashmap) {
+    private static void setStatistics(UUID uuid, String name, int fished, int mined, int killed, int placed, int traversed, int harvestedCrops, HashMap<UUID, PlayerStatistics> hashmap) {
         PlayerStatistics stats = new PlayerStatistics();
 
         stats.setPlayerUUID(uuid);
@@ -43,11 +44,12 @@ public class StatisticsManager {
         stats.setMobsKilled(killed);
         stats.setPlacedBlocks(placed);
         stats.setTraversedBlocks(traversed);
+        stats.setHarvestedCrops(harvestedCrops);
 
         hashmap.put(stats.getPlayerUUID(), stats);
     }
 
-    public static void setTopThreeStatistics(HashMap<String, LinkedHashMap<String, Integer>> topThree) {
+    public static void setTopFiveStatistics(HashMap<String, LinkedHashMap<String, Integer>> topThree) {
         topThreeStatistics = topThree;
     }
 
@@ -55,11 +57,11 @@ public class StatisticsManager {
         return globalStatistics;
     }
 
-    public static HashMap<UUID, Object> getPlayerStatistics() {
+    public static HashMap<UUID, PlayerStatistics> getPlayerStatistics() {
         return playerStatistics;
     }
 
-    public static HashMap<UUID, Object> getOfflinePlayerStatistics() {
+    public static HashMap<UUID, PlayerStatistics> getOfflinePlayerStatistics() {
         return offlinePlayerStatistics;
     }
 
@@ -87,5 +89,36 @@ public class StatisticsManager {
             }
         }
         return count;
+    }
+
+    public static int getHarvestedCrops(UUID playerUUID) {
+        PlayerStatistics stats = (PlayerStatistics) getOfflinePlayerStatistics().get(playerUUID);
+        if (stats != null) {
+            return stats.getHarvestedCrops();
+        }
+        return 0;
+    }
+
+    public static List<Map.Entry<UUID, PlayerStatistics>> getTopStatistics(String type, int limit) {
+        return getPlayerStatistics().entrySet().stream()
+                .sorted((a, b) -> {
+                    PlayerStatistics statA = (PlayerStatistics) a.getValue();
+                    PlayerStatistics statB = (PlayerStatistics) b.getValue();
+
+                    int compare;
+                    switch (type.toLowerCase()) {
+                        case "fishing" -> compare = Integer.compare(statB.getFishedFish(), statA.getFishedFish());
+                        case "mining" -> compare = Integer.compare(statB.getMinedBlocks(), statA.getMinedBlocks());
+                        case "killing" -> compare = Integer.compare(statB.getMobsKilled(), statA.getMobsKilled());
+                        case "travelling" -> compare = Long.compare(statB.getTraversedBlocks(), statA.getTraversedBlocks());
+                        case "placing" -> compare = Integer.compare(statB.getPlacedBlocks(), statA.getPlacedBlocks());
+                        case "crops" -> compare = Integer.compare(statB.getHarvestedCrops(), statA.getHarvestedCrops());
+                        default -> compare = 0;
+                    }
+
+                    return compare;
+                })
+                .limit(limit)
+                .toList();
     }
 }

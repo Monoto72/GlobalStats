@@ -4,31 +4,23 @@ import me.monoto.statistics.Statistics;
 import me.monoto.statistics.database.DatabaseManager;
 import me.monoto.statistics.stats.PlayerStatistics;
 import me.monoto.statistics.stats.StatisticsManager;
+import me.monoto.statistics.utils.ComponentUtils;
+import me.monoto.statistics.utils.Formatters;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bstats.json.JsonObjectBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import static org.bukkit.Bukkit.getPluginManager;
-import static org.bukkit.Material.FISHING_ROD;
-import static org.bukkit.Material.NAME_TAG;
 
 public class RouteEvent implements Listener {
 
@@ -53,7 +45,8 @@ public class RouteEvent implements Listener {
                     StatisticsManager.getTotalBlocks(player, Statistic.MINE_BLOCK),
                     player.getStatistic(Statistic.MOB_KILLS),
                     StatisticsManager.getTotalBlocks(player, Statistic.USE_ITEM),
-                    StatisticsManager.getTotalBlocksTraversed(player)
+                    StatisticsManager.getTotalBlocksTraversed(player),
+                    StatisticsManager.getHarvestedCrops(player.getUniqueId())
             );
 
             DatabaseManager.savePlayer(player.getUniqueId());
@@ -66,22 +59,22 @@ public class RouteEvent implements Listener {
                 }
             }
         }
-        
+
         if (player.isOp() && Statistics.getInstance().getConfig().getBoolean("check-for-updates") && Statistics.getInstance().getVersion() != null) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> player.sendMessage(
-                    MiniMessage.miniMessage().deserialize(
+                    ComponentUtils.PREFIX.append(MiniMessage.miniMessage().deserialize(
                             "<black>[<white>GlobalStats<black>] <aqua><version> is out! (<u><click:open_url:'https://www.spigotmc.org/resources/globalstats.103379/'>Download</click></u>)",
                             Placeholder.component("version", Component.text(Statistics.getInstance().getVersion()))
-                    )
+                    ))
             ), 20L * 2);
         }
 
         if (player.getName().equalsIgnoreCase("Monotoo") || player.getName().equalsIgnoreCase("Monoto") || player.getName().equalsIgnoreCase("oiSam")) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> player.sendMessage(
-                    MiniMessage.miniMessage().deserialize(
-                            "<black>[<white>GlobalStats<black>] <aqua>This server is running your plugin. It is running version <version>",
+                    ComponentUtils.PREFIX.append(MiniMessage.miniMessage().deserialize(
+                            "<aqua>This server is running your plugin. It is running version <version>",
                             Placeholder.component("version", Component.text(plugin.getDescription().getVersion()))
-                    )
+                    ))
             ), 20L * 2);
         }
     }

@@ -1,8 +1,46 @@
-# IntelliJ
-*.iml
-*.java___jb_tmp___
-.idea/
+### Eclipse ###
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.externalToolBuilders/
+*.launch
 
-# Maven
-target/
-bundler/
+### IntelliJ ###
+.idea/**
+*.iml
+*.ipr
+*.iws
+out/
+
+### Java ###
+*.class
+*.log
+hs_err_pid*
+
+### Gradle ###
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+### Ant ###
+build.xml
+
+### Git ###
+*.orig
+*.BACKUP.*
+*.BASE.*
+*.LOCAL.*
+*.REMOTE.*
+
+### My Stuff ###
+/run/
+
+/bundler/
+/target/

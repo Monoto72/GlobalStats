@@ -9,24 +9,18 @@ import me.monoto.statistics.stats.PlayerStatistics;
 import me.monoto.statistics.stats.StatisticsManager;
 import me.monoto.statistics.utils.Formatters;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Powerable;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 public class GlobalMenu {
     public static void initialise(Player player) {
-        Gui gui = Gui.gui().rows(3).title(Formatters.mini(Formatters.lang().getString("gui.main.title_global", "<black>Global Statistics"))).create();
+        Gui gui = Gui.gui().rows(4).title(Formatters.mini(Formatters.lang().getString("gui.main.title_global", "<black>Global Statistics"))).create();
         populateGlobal(gui);
 
         gui.setDefaultClickAction(event -> event.setCancelled(true));
@@ -34,7 +28,7 @@ public class GlobalMenu {
     }
 
     public static void initialise(Player player, OfflinePlayer oPlayer) {
-        Gui gui = Gui.gui().rows(3).title(Formatters.mini(Formatters.lang().getString("gui.main.title_global", "<black>Global Statistics"))).create();
+        Gui gui = Gui.gui().rows(4).title(Formatters.mini(Formatters.lang().getString("gui.main.title_global", "<black>Global Statistics"))).create();
 
         populatePlayer(gui, oPlayer);
 
@@ -49,7 +43,7 @@ public class GlobalMenu {
 
     private static void populatePlayer(Gui gui, OfflinePlayer target) {
         gui.setItem(10, ItemBuilder.skull().owner(target).name(Formatters.getPlayerSkullTitle(target).decoration(TextDecoration.ITALIC, false)).asGuiItem());
-        gui.setItem(26, BackButton.getBackButton().asGuiItem(event -> PlayerListMenu.initialise((Player) event.getWhoClicked())));
+        gui.setItem(35, BackButton.getBackButton().asGuiItem(event -> PlayerListMenu.initialise((Player) event.getWhoClicked())));
         populateMenu(gui, target);
     }
 
@@ -74,6 +68,10 @@ public class GlobalMenu {
             if (target != null) PlayerStatisticsMenuItems.getItemPreview("placing", (Player) event.getWhoClicked(), target);
         }));
 
+        gui.setItem(21, ItemBuilder.from(Material.WHEAT).name(Formatters.mini(Formatters.lang().getString("gui.main.category.crops.title", "Crop Harvesting")).decoration(TextDecoration.ITALIC, false)).lore(target == null ? getLore("crops") : getLore("crops", target)).asGuiItem(event -> {
+            if (target != null) PlayerStatisticsMenuItems.getItemPreview("crops", (Player) event.getWhoClicked(), target);
+        }));
+
         gui.getFiller().fill(ItemBuilder.from(Material.BLACK_STAINED_GLASS_PANE).name(Component.text(" ")).asGuiItem());
     }
 
@@ -86,6 +84,7 @@ public class GlobalMenu {
             case "killing" -> String.valueOf(StatisticsManager.getGlobalStatistics().getMobsKilled());
             case "travelling" -> Formatters.getDistanceFormatter(StatisticsManager.getGlobalStatistics().getTraversedBlocks());
             case "placing" -> String.valueOf(StatisticsManager.getGlobalStatistics().getPlacedBlocks());
+            case "crops" -> String.valueOf(StatisticsManager.getGlobalStatistics().getHarvestedCrops());
             default -> "0";
         };
 
@@ -125,6 +124,7 @@ public class GlobalMenu {
             case "killing" -> String.valueOf(stats.getMobsKilled());
             case "travelling" -> Formatters.getDistanceFormatter(stats.getTraversedBlocks());
             case "placing" -> String.valueOf(stats.getPlacedBlocks());
+            case "crops" -> String.valueOf(stats.getHarvestedCrops());
             default -> "0";
         };
 

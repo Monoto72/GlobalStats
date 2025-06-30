@@ -12,6 +12,7 @@ public class PlayerStatistics {
     private int mobsKilled;
     private int placedBlocks;
     private int traversedBlocks;
+    private int harvestedCrops;
 
     public void setPlayerUUID(UUID value) {
         this.uuid = value;
@@ -67,5 +68,13 @@ public class PlayerStatistics {
 
     public int getTraversedBlocks() {
         return this.traversedBlocks;
+    }
+
+    public int getHarvestedCrops() {
+        return harvestedCrops;
+    }
+
+    public void setHarvestedCrops(int harvestedCrops) {
+        this.harvestedCrops = harvestedCrops;
     }
 }

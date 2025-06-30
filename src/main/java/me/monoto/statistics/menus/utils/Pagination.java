@@ -6,10 +6,8 @@ import dev.triumphteam.gui.guis.PaginatedGui;
 import me.monoto.statistics.utils.Formatters;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Objects;

@@ -2,23 +2,17 @@ package me.monoto.statistics.utils;
 
 import me.monoto.statistics.Statistics;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Tag;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class Formatters {
@@ -59,10 +53,28 @@ public class Formatters {
         return MiniMessage.miniMessage().deserialize(message, Placeholder.component(placeholder, replacement));
     }
 
-    // TODO: Add support for multiple placeholders - Potentially done...
     public static Component miniMulti(String message, List<String> placeholders, List<Component> replacements) {
-        Iterable<? extends TagResolver> placeholdersIterable = placeholders.stream().map(placeholder -> Placeholder.component(placeholder, replacements.get(placeholders.indexOf(placeholder)))).collect(Collectors.toList());
+        if (placeholders.size() != replacements.size()) {
+            throw new IllegalArgumentException("Placeholder and replacement list sizes must match");
+        }
 
-        return MiniMessage.miniMessage().deserialize(message, TagResolver.resolver(placeholdersIterable));
+        TagResolver.Builder builder = TagResolver.builder();
+        for (int i = 0; i < placeholders.size(); i++) {
+            builder.resolver(Placeholder.component(placeholders.get(i), replacements.get(i)));
+        }
+
+        return MiniMessage.miniMessage().deserialize(message, builder.build());
+    }
+
+    public static Component miniWithPrefix(String message) {
+        return ComponentUtils.PREFIX.append(mini(message));
+    }
+
+    public static Component miniWithPrefix(String message, String placeholder, Component replacement) {
+        return ComponentUtils.PREFIX.append(mini(message, placeholder, replacement));
+    }
+
+    public static Component miniMultiWithPrefix(String message, List<String> placeholders, List<Component> replacements) {
+        return ComponentUtils.PREFIX.append(miniMulti(message, placeholders, replacements));
     }
 }

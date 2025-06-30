@@ -1,0 +1,13 @@
+name: GlobalStats
+version: '${version}'
+main: me.monoto.statistics.Statistics
+api-version: '1.21.5'
+authors: [ Monoto ]
+description: A plugin to view chosen statistics on the server
+  
+dependencies:
+  server:
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
